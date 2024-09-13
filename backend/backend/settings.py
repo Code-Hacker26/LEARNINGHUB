@@ -136,9 +136,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR,"static"),
-                    os.path.abspath("../backend/images")
-                    ]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,"static")]
+                    # os.path.abspath("../backend/images")
+                    # ]
 
 STATIC_ROOT = BASE_DIR / 'templates'
 
@@ -150,18 +150,35 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'userauths.User'
 
 
-MAILGUN_API_KEY = env("MAILGUN_API_KEY")
-MAILERSEND_API_TOKEN = env("MAILERSEND_API_TOKEN")
-MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
+# MAILGUN_API_KEY = env("MAILGUN_API_KEY")
+# MAILERSEND_API_TOKEN = env("MAILERSEND_API_TOKEN")
+# MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
 
 
-ANYMAIL = {
-    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
-}
+# ANYMAIL = {
+#     "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
+#     "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
+# }
 
-FROM_EMAIL = env("FROM_EMAIL")
-EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+# FROM_EMAIL = env("FROM_EMAIL")
+# EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'zalaravindrasinh026@gmail.com'
+EMAIL_HOST_PASSWORD = 'upel kaet gisa lagl'
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+# STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
+# PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID") # PAYPAL_CLIENT_ID=9-320034750834758934758347
+# PAYPAL_SECRET_ID = env("PAYPAL_SECRET_ID") # PAYPAL_SECRET_ID=9-320034750834758934758347
+
+
+FRONTEND_SITE_URL = env("FRONTEND_SITE_URL")
+BACKEND_SITE_URL = env("BACKEND_SITE_URL")
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -230,4 +247,9 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOW_ALL_ORIGIS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Add your frontend origin
+]
+
+# Optionally, if you want to allow all origins (use with caution):
+# CORS_ALLOW_ALL_ORIGINS = True

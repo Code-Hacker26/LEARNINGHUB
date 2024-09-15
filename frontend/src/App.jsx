@@ -1,4 +1,7 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { CartContext, ProfileContext } from "./views/plugin/Context";
+import apiInstance from "./utils/axios";
 
 import MainWrapper from "./layouts/MainWrapper";
 import PrivateRoute from "./layouts/PrivateRoute";
@@ -11,11 +14,23 @@ import CreateNewPassword from "./views/auth/CreateNewPassword";
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
 import Cart from "./views/base/Cart";
+import CartId from "./views/plugin/CartId";
+import Checkout from "./views/base/Checkout";
 
 
 
 function App() {
+  const [cartCount, setCartCount] = useState(0);
+  // const [profile, setProfile] = useState([]);
+
+  useEffect(() => {
+    apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
+      setCartCount(res.data?.length);
+    });
+
+   }, []);
   return (
+    <CartContext.Provider value={[cartCount, setCartCount]}>
     <BrowserRouter>
       <MainWrapper>
         <Routes>
@@ -23,6 +38,7 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/course-detail/:slug/" element={<CourseDetail />} />
           <Route path="/cart/" element={<Cart />} />
+          <Route path="/checkout/:order_oid/" element={<Checkout />} />
         <Route path="/register/" element={<Register />} />
         <Route path="/login/" element={<Login />} />
         <Route path="/logout/" element={<Logout />} />
@@ -33,6 +49,7 @@ function App() {
         </Routes>
       </MainWrapper>
     </BrowserRouter>
+    </CartContext.Provider>
   )
 }
 

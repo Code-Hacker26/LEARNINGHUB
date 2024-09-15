@@ -26,6 +26,7 @@ function CourseDetail() {
   const userId = UserData().user_id;
 
   const fetchCourse = () => {
+  
     useAxios()
       .get(`course/course-detail/${param.slug}/`)
       .then((res) => {

@@ -39,7 +39,7 @@ export const register = async (full_name, email, password, password2) => {
     return {
       data: null,
       error:
-        `${error.response.data.full_name} - ${error.response.data.email}` ||
+        // `${error.response.data.full_name} - ${error.response.data.email}` ||
         "Something went wrong",
     };
   }

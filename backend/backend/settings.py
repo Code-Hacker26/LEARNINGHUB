@@ -252,5 +252,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Add your frontend origin
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 # Optionally, if you want to allow all origins (use with caution):
 # CORS_ALLOW_ALL_ORIGINS = True

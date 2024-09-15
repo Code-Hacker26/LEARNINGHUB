@@ -69,12 +69,11 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class VariantItemSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         fields = '__all__'
         model = api_models.VariantItem
 
-    
     def __init__(self, *args, **kwargs):
         super(VariantItemSerializer, self).__init__(*args, **kwargs)
         request = self.context.get("request")
@@ -84,13 +83,13 @@ class VariantItemSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 
+
 class VariantSerializer(serializers.ModelSerializer):
-    variant_items = VariantItemSerializer(many=True)
-    items = VariantItemSerializer(many=True)
+    variant_items = VariantItemSerializer(many=True)  # Only this field
+
     class Meta:
         fields = '__all__'
         model = api_models.Variant
-
 
     def __init__(self, *args, **kwargs):
         super(VariantSerializer, self).__init__(*args, **kwargs)
@@ -99,8 +98,6 @@ class VariantSerializer(serializers.ModelSerializer):
             self.Meta.depth = 0
         else:
             self.Meta.depth = 3
-
-
 
 
 class Question_Answer_MessageSerializer(serializers.ModelSerializer):
@@ -277,7 +274,7 @@ class CourseSerializer(serializers.ModelSerializer):
     lectures = VariantItemSerializer(many=True, required=False, read_only=True,)
     reviews = ReviewSerializer(many=True, read_only=True, required=False)
     class Meta:
-        fields = ["id", "category", "teacher", "file", "image", "title", "description", "price", "language", "level", "platform_status", "teacher_course_status", "featured", "course_id", "slug", "date", "students", "curriculum", "lectures", "average_rating", "rating_count", "reviews",]
+        fields = '__all__'
         model = api_models.Course
 
     def __init__(self, *args, **kwargs):

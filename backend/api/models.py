@@ -169,35 +169,35 @@ class Variant(models.Model):
     
 
 class VariantItem(models.Model):
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name="variant_items")
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE, related_name="variant_items")
     title = models.CharField(max_length=1000)
     description = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to="course-file", null=True, blank=True)
-    duration = models.DurationField(null=True, blank=True)
-    content_duration = models.CharField(max_length=1000, null=True, blank=True)
+    duration = models.DurationField(null=True, blank=True)  # For actual DurationField
+    content_duration = models.CharField(max_length=1000, null=True, blank=True)  # For readable format
     preview = models.BooleanField(default=False)
     variant_item_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="1234567890")
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.variant.title} - {self.title}"
-    
+
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
         if self.file:
-            clip = VideoFileClip(self.file.path)
-            duration_seconds = clip.duration
+            try:
+                clip = VideoFileClip(self.file.path)
+                duration_seconds = clip.duration
 
-            minutes, remainder = divmod(duration_seconds, 60)  
+                minutes, remainder = divmod(duration_seconds, 60)
+                minutes = math.floor(minutes)
+                seconds = math.floor(remainder)
 
-            minutes = math.floor(minutes)
-            seconds = math.floor(remainder)
+                self.content_duration = f"{minutes}m {seconds}s"
 
-            duration_text = f"{minutes}m {seconds}s"
-            self.content_duration = duration_text
-            super().save(update_fields=['content_duration'])
+            except Exception as e:
+                print(f"Error processing video duration: {e}")
 
+        super().save(*args, **kwargs)
 
 class Question_Answer(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

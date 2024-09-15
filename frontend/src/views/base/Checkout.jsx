@@ -9,7 +9,7 @@ import CartId from "../plugin/CartId";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import { userId } from "../../utils/constants";
-import { PAYPAL_CLIENT_ID } from "../../utils/constants";
+import { PAYPAL_CLIENT_ID } from "../../utils/constants"; 
 
 function Checkout() {
   const [order, setOrder] = useState([]);

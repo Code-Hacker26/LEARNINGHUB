@@ -71,7 +71,7 @@ function Index() {
   };
 
 //   Pagination
-  const itemsPerPage = 1;
+  const itemsPerPage = 3;
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -229,7 +229,7 @@ function Index() {
           <div className="row">
             <div className="col-md-12">
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                {courses?.map((c, index) => (
+                {currentItems?.map((c, index) => (
                   <div className="col" key={c.id}>
                     {/* Card */}
                     <div className="card card-hover">

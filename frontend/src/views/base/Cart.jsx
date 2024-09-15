@@ -3,8 +3,32 @@ import { Link } from 'react-router-dom'
 
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
-
+import apiInstance from "../../utils/axios";
+import CartId from "../plugin/CartId";
 function Cart() {
+    const [cart, setCart] = useState([]);
+  const [cartStats, setCartStats] = useState([]);
+
+  const fetchCartItem = async () => {
+    try {
+      await apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
+        console.log(res.data);
+        setCart(res.data);
+      });
+
+      await apiInstance.get(`cart/stats/${CartId()}/`).then((res) => {
+        console.log(res.data);
+        setCartStats(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartItem();
+  }, []);
+
     return (
         <>
             <BaseHeader />

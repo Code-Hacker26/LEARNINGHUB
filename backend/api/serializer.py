@@ -285,8 +285,8 @@ class CourseSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.method == "POST":
             self.Meta.depth = 0
-        else:
-            self.Meta.depth = 3
+        else:   
+            self.Meta.depth = 3 
 
 
 

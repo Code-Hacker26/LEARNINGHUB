@@ -3,8 +3,7 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import apiInstance from "../../utils/axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
-   
-
+import Toast from "../plugin/Toast";
 function CreateNewPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,8 +20,10 @@ function CreateNewPassword() {
     e.preventDefault();
     setIsLoading(true);
     if (confirmPassword !== password) {
-      alert("Password do not Match")
-      setIsLoading (false);
+      Toast().fire({
+        icon: "warning",
+        title: "Passwords does not match",
+      });
       return;
     } else {
       const formdata = new FormData();
@@ -38,7 +39,10 @@ function CreateNewPassword() {
             console.log(res.data);
             setIsLoading(false);
             navigate("/login/");
-            alert("Password Matched")
+            Toast().fire({
+              icon: "warning",
+              title: res.data.message,
+            });
           });
       } catch (error) {
         console.log(error);
@@ -48,7 +52,6 @@ function CreateNewPassword() {
 
     console.log("Password Created");
   };
-  
   return (
     <>
       <BaseHeader />

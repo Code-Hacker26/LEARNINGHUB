@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import apiInstance from "../../utils/axios";
-  import { register } from "../../utils/auth";
+import { register } from "../../utils/auth";
 
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
@@ -17,7 +17,7 @@ function Register() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();    
+    e.preventDefault();
     setIsLoading(true);
 
     const { error } = await register(fullName, email, password, password2);
@@ -109,7 +109,7 @@ function Register() {
                     </label>
                     <input
                       type="password"
-                      id="password_confirm"
+                      id="password"
                       className="form-control"
                       name="password"
                       placeholder="**************"

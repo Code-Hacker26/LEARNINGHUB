@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Swal from "sweetalert2";
+import Rater from "react-rater";
+import "react-rater/lib/react-rater.css"
 
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";

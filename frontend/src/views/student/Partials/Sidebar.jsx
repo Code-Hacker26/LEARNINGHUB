@@ -33,7 +33,7 @@ function Sidebar() {
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to={`/student/courses/`}>
-                                    {" "}
+                                    
                                     <i className="fas fa-shopping-cart"></i>My Courses
                                 </Link>
                             </li>

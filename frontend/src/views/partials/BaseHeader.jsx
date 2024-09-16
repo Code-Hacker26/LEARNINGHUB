@@ -13,7 +13,8 @@ function BaseHeader() {
     };
 
     const [isLoggedIn, user] = useAuthStore((state) => [state.isLoggedIn, state.user]);
-
+    console.log("helllo",isLoggedIn());
+    
     return (
         <div>
             <nav className="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">

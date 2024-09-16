@@ -1,28 +1,197 @@
-import React, { useState } from 'react'
-import BaseHeader from '../partials/BaseHeader'
-import BaseFooter from '../partials/BaseFooter'
-import Sidebar from './Partials/Sidebar'
-import Header from './Partials/Header'
-
+import React, { useState ,useEffect} from 'react'
+import { useParams } from "react-router-dom";
 import ReactPlayer from 'react-player'
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import BaseHeader from '../partials/BaseHeader'
+import BaseFooter from '../partials/BaseFooter'
+import Sidebar from './Partials/Sidebar'
+import Header from './Partials/Header'
+
+
+
 function CourseDetail() {
 
+  const [course,setCourse]=useState([])
+  const param = useParams();
+  const [variantItem,setVariantItem]=useState(null)
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [markAsCompletedStatus, setMarkAsCompletedStatus] = useState({});
+  const [createNote, setCreateNote] = useState({ title: "", note: "" });
+  const [createMessage, setCreateMessage] = useState({
+    title: "",
+    message: "",
+  });
+
+  // pla lecture modal
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => { setShow(true); }
+  const handleShow = (variant_item) => { setShow(true); 
+    setVariantItem(variant_item)
+  }
 
   const [noteShow, setNoteShow] = useState(false);
   const handleNoteClose = () => setNoteShow(false);
-  const handleNoteShow = () => { setNoteShow(true); }
+  const handleNoteShow = () => { setNoteShow(true);
+    setSelectedNote(note)
+   }
 
   const [ConversationShow, setConversationShow] = useState(false);
   const handleConversationClose = () => setConversationShow(false);
   const handleConversationShow = () => { setConversationShow(true); }
+  const [selectedNote, setSelectedNote] = useState(null);
 
+
+  const [addQuestionShow, setAddQuestionShow] = useState(false);
+  const handleQuestionClose = () => setAddQuestionShow(false);
+  const handleQuestionShow = () => setAddQuestionShow(true);
+
+
+  const fetchCourseDetail = async () => {
+    useAxios()
+      .get(
+        `student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
+      )
+      .then((res) => {
+        setCourse(res.data);
+        setQuestions(res.data.question_answer);
+        setStudentReview(res.data.review);
+        const percentageCompleted =
+          (res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
+        setCompletionPercentage(percentageCompleted?.toFixed(0));
+      });
+   };
+  useEffect(() => {
+    fetchCourseDetail();
+  }, []);
+
+  const handleMarkLessonAsCompleted = (variantItemId) => {
+    const key = `lecture_${variantItemId}`;
+    setMarkAsCompletedStatus({
+      ...markAsCompletedStatus,
+      [key]: "Updating",
+    });
+  }
+
+  const formdata = new FormData();
+    formdata.append("user_id", UserData()?.user_id || 0);
+    formdata.append("course_id", course.course?.id);
+    formdata.append("variant_item_id", variantItemId);
+
+    useAxios()
+      .post(`student/course-completed/`, formdata)
+      .then((res) => {
+        fetchCourseDetail();
+        setMarkAsCompletedStatus({
+          ...markAsCompletedStatus,
+          [key]: "Updated",
+        });
+      });
+  
+      const handleNoteChange = (event) => {
+        setCreateNote({
+          ...createNote,
+          [event.target.name]: event.target.value,
+        });
+      };
+     console.log(createNote);
+
+     const handleSubmitCreateNote = async (e) => {
+      e.preventDefault();
+      const formdata = new FormData();
+  
+      formdata.append("user_id", UserData()?.user_id);
+      formdata.append("enrollment_id", param.enrollment_id);
+      formdata.append("title", createNote.title);
+      formdata.append("note", createNote.note);
+  
+      try {
+        await useAxios()
+          .post(
+            `student/course-note/${UserData()?.user_id}/${param.enrollment_id}/`,
+            formdata
+          )
+          .then((res) => {
+            fetchCourseDetail();
+            handleNoteClose();
+            Toast().fire({
+              icon: "success",
+              title: "Note created",
+            });
+            handleNoteClose()
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  const handleSubmitEditNote =(e,noteId)=>{
+    e.preventDefault();
+    const formdata = new FormData();
+
+    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("enrollment_id", param.enrollment_id);
+    formdata.append("title", createNote.title || selectedNote?.title);
+    formdata.append("note", createNote.note || selectedNote?.note);
+    useAxios()
+    .patch(
+      `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
+      formdata
+    )
+    .then((res) => {
+      fetchCourseDetail();
+      Toast().fire({
+        icon: "success",
+        title: "Note updated",
+      });
+    });
+  }
+
+  const handleDeleteNote = (noteId) => {
+    useAxios()
+      .delete(
+        `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`
+      )
+      .then((res) => {
+        fetchCourseDetail();
+        Toast().fire({
+          icon: "success",
+          title: "Note deleted",
+        });
+      });
+  };
+
+  const handleMessageChange = (event) => {
+    setCreateMessage({
+      ...createMessage,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSaveQuestion = async (e) => {
+    e.preventDefault();
+    const formdata = new FormData();
+
+    formdata.append("course_id", course.course?.id);
+    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("title", createMessage.title);
+    formdata.append("message", createMessage.message);
+
+    await useAxios()
+      .post(
+        `student/question-answer-list-create/${course.course?.id}/`,
+        formdata
+      )
+      .then((res) => {
+        fetchCourseDetail();
+        handleQuestionClose();
+        Toast().fire({
+          icon: "success",
+          title: "Question sent",
+        });
+      });
+  };
   return (
     <>
       <BaseHeader />
@@ -116,7 +285,7 @@ function CourseDetail() {
                               id="course-pills-1"
                               role="tabpanel"
                               aria-labelledby="course-pills-tab-1"
-                            >
+                             >
                               {/* Accordion START */}
                               <div
                                 className="accordion accordion-icon accordion-border"
@@ -127,203 +296,91 @@ function CourseDetail() {
                                   <div
                                     className="progress-bar"
                                     role="progressbar"
-                                    style={{ width: `${25}%` }}
-                                    aria-valuenow={25}
+                                    style={{ width: `${completionPercentage}%` }}
+                                    aria-valuenow={completionPercentage}
                                     aria-valuemin={0}
                                     aria-valuemax={100}
                                   >
-                                    25%
+                                    {completionPercentage}%
                                   </div>
                                 </div>
                                 {/* Item */}
-                                <div className="accordion-item mb-3">
-                                  <h6 className="accordion-header font-base" id="heading-1">
-                                    <button
-                                      className="accordion-button fw-bold rounded d-sm-flex d-inline-block collapsed"
-                                      type="button"
-                                      data-bs-toggle="collapse"
-                                      data-bs-target="#collapse-1"
-                                      aria-expanded="true"
-                                      aria-controls="collapse-1"
-                                    >
-                                      Introduction of Digital Marketing
-                                      <span className="small ms-0 ms-sm-2">
-                                        (3 Lectures)
-                                      </span>
-                                    </button>
-                                  </h6>
-                                  <div
-                                    id="collapse-1"
-                                    className="accordion-collapse collapse show"
-                                    aria-labelledby="heading-1"
-                                    data-bs-parent="#accordionExample2"
-                                  >
-                                    <div className="accordion-body mt-3">
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-play me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                            Introduction
-                                          </span>
-                                        </div>
-                                        <div className='d-flex'>
-                                          <p className="mb-0">3m 9s</p>
-                                          <input type="checkbox" className='form-check-input' name="" id="" />
-                                        </div>
-                                      </div>
-                                      <hr /> {/* Divider */}
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-play me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
 
-                                            What is Digital Marketing What is Digital
-                                            Marketing
-                                          </span>
-                                        </div>
-                                        <p className="mb-0 text-truncate">15m 10s</p>
-                                      </div>
-                                      <hr /> {/* Divider */}
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-lock me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate text-muted ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                            Type of Digital Marketing
-                                          </span>
-                                        </div>
-                                        <p className="mb-0">18m 10s</p>
+                               
+                                {course?.curriculum?.map((c, index) => (
+                                  <div className="accordion-item mb-3 p-3 bg-light">
+                                    <h6
+                                      className="accordion-header font-base"
+                                      id="heading-1"
+                                    >
+                                      <button
+                                        className="accordfion-button p-3 w-100 bg-light btn border fw-bold rounded d-sm-flex d-inline-block collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target={`#collapse-${c.variant_id}`}
+                                        aria-expanded="true"
+                                        aria-controls={`collapse-${c.variant_id}`}
+                                      >
+                                        {c.title}
+                                        <span className="small ms-0 ms-sm-2">
+                                          ({c.variant_items?.length} Lecture
+                                          {c.variant_items?.length > 1 && "s"})
+                                        </span>
+                                      </button>
+                                    </h6>
+
+                                    <div
+                                      id={`collapse-${c.variant_id}`}
+                                      className="accordion-collapse collapse show"
+                                      aria-labelledby="heading-1"
+                                      data-bs-parent="#accordionExample2"
+                                    >
+                                      <div className="accordion-body mt-3">
+                                        {/* Course lecture */}
+                                        {c.variant_items?.map((l, index) => (
+                                          <>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                              <div className="position-relative d-flex align-items-center">
+                                                <button
+                                                  onClick={() => handleShow(l)}
+                                                  className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
+                                                >
+                                                  <i className="fas fa-play me-0" />
+                                                </button>
+                                                <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
+                                                  {l.title}
+                                                </span>
+                                              </div>
+                                              <div className="d-flex">
+                                                <p className="mb-0">
+                                                  {l.content_duration ||
+                                                    "0m 0s"}
+                                                </p>
+                                                <input
+                                                  type="checkbox"
+                                                  className="form-check-input ms-2"
+                                                  name=""
+                                                  id=""
+                                                  onChange={() =>
+                                                    handleMarkLessonAsCompleted(
+                                                      l.variant_item_id
+                                                    )
+                                                  }
+                                                  checked={course.completed_lesson?.some(
+                                                    (cl) =>
+                                                      cl.variant_item.id ===
+                                                      l.id
+                                                  )}
+                                                />
+                                              </div>
+                                            </div>
+                                            <hr />
+                                          </>
+                                        ))}
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                                {/* Item */}
-                                <div className="accordion-item mb-3">
-                                  <h6 className="accordion-header font-base" id="heading-2">
-                                    <button
-                                      className="accordion-button fw-bold collapsed rounded d-sm-flex d-inline-block"
-                                      type="button"
-                                      data-bs-toggle="collapse"
-                                      data-bs-target="#collapse-2"
-                                      aria-expanded="false"
-                                      aria-controls="collapse-2"
-                                    >
-                                      Customer Life cycle
-                                      <span className="small ms-0 ms-sm-2">
-                                        (4 Lectures)
-                                      </span>
-                                    </button>
-                                  </h6>
-                                  <div
-                                    id="collapse-2"
-                                    className="accordion-collapse collapse"
-                                    aria-labelledby="heading-2"
-                                    data-bs-parent="#accordionExample2"
-                                  >
-                                    {/* Accordion body START */}
-                                    <div className="accordion-body mt-3">
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-play me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                            What is Digital Marketing
-                                          </span>
-                                        </div>
-                                        <p className="mb-0">11m 20s</p>
-                                      </div>
-                                      <hr /> {/* Divider */}
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-play me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                            15 Tips for Writing Magnetic Headlines
-                                          </span>
-                                        </div>
-                                        <p className="mb-0 text-truncate">25m 20s</p>
-                                      </div>
-                                      <hr /> {/* Divider */}
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                          >
-                                            <i className="fas fa-play me-0" />
-                                          </a>
-                                          <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px">
-                                            How to Write Like Your Customers Talk
-                                          </span>
-                                        </div>
-                                        <p className="mb-0">11m 30s</p>
-                                      </div>
-                                      <hr /> {/* Divider */}
-                                      {/* Course lecture */}
-                                      <div className="d-flex justify-content-between align-items-center">
-                                        <div className="position-relative d-flex align-items-center">
-                                          <div>
-                                            <a
-                                              href="#"
-                                              className="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#exampleModal"
-                                            >
-                                              <i className="fas fa-play me-0" />
-                                            </a>
-                                          </div>
-                                          <div className="row g-sm-0 align-items-center">
-                                            <div className="col-sm-6">
-                                              <span className="d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-md-400px">
-                                                How to Flip Features Into Benefits
-                                              </span>
-                                            </div>
-                                            <div className="col-sm-6">
-                                              <span className="badge text-bg-orange ms-2 ms-md-0">
-                                                <i className="fas fa-lock fa-fw me-1" />
-                                                Premium
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <p className="mb-0 d-inline-block text-truncate w-70px w-sm-60px">
-                                          35m 30s
-                                        </p>
-                                      </div>
-                                    </div>
-                                    {/* Accordion body END */}
-                                  </div>
-                                </div>
-
-
+                                ))}
                               </div>
                               {/* Accordion END */}
                             </div>
@@ -352,18 +409,23 @@ function CourseDetail() {
                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                                           </div>
                                           <div className="modal-body">
-                                            <form>
+                                            <form onSubmit={{handleSubmitCreateNote}}>
                                               <div className="mb-3">
                                                 <label htmlFor="exampleInputEmail1" className="form-label">
                                                   Note Title
                                                 </label>
-                                                <input type="text" className="form-control" />
+                                                <input
+                                                  type="text"
+                                                  className="form-control"
+                                                  name="title"
+                                                  onChange={handleNoteChange}
+                                                />
                                               </div>
                                               <div className="mb-3">
                                                 <label htmlFor="exampleInputPassword1" className="form-label">
                                                   Note Content
                                                 </label>
-                                                <textarea className='form-control' name="" id="" cols="30" rows="10"></textarea>
+                                                <textarea className='form-control' name="note" id="" cols="30" rows="10"  onChange={handleNoteChange}></textarea>
                                               </div>
                                               <button type="button" className="btn btn-secondary me-2" data-bs-dismiss="modal" ><i className='fas fa-arrow-left'></i> Close</button>
                                               <button type="submit" className="btn btn-primary">Save Note <i className='fas fa-check-circle'></i></button>
@@ -376,31 +438,36 @@ function CourseDetail() {
                                 </div>
                                 <div className="card-body p-0 pt-3">
                                   {/* Note item start */}
-                                  <div className="row g-4 p-3">
-                                    <div className="col-sm-11 col-xl-11 shadow p-3 m-3 rounded">
-                                      <h5> What is Digital Marketing What is Digital Marketing</h5>
-                                      <p>
-                                        Arranging rapturous did believe him all had supported.
-                                        Supposing so be resolving breakfast am or perfectly.
-                                        It drew a hill from me. Valley by oh twenty direct me
-                                        so. Departure defective arranging rapturous did
-                                        believe him all had supported. Family months lasted
-                                        simple set nature vulgar him. Picture for attempt joy
-                                        excited ten carried manners talking how. Family months
-                                        lasted simple set nature vulgar him. Picture for
-                                        attempt joy excited ten carried manners talking how.
-                                      </p>
-                                      {/* Buttons */}
-                                      <div className="hstack gap-3 flex-wrap">
-                                        <a onClick={handleNoteShow} className="btn btn-success mb-0">
-                                          <i className="bi bi-pencil-square me-2" /> Edit
-                                        </a>
-                                        <a href="#" className="btn btn-danger mb-0">
-                                          <i className="bi bi-trash me-2" /> Delete
-                                        </a>
+                                  {course?.note?.map((n, index) => (
+                                    <div className="row g-4 p-3">
+                                      <div className="col-sm-11 col-xl-11 shadow p-3 m-3 rounded">
+                                        <h5> {n.title}</h5>
+                                        <p>{n.note}</p>
+                                        {/* Buttons */}
+                                        <div className="hstack gap-3 flex-wrap">
+                                          <a
+                                            onClick={() => handleNoteShow(n)}
+                                            className="btn btn-success mb-0"
+                                          >
+                                            <i className="bi bi-pencil-square me-2" />{" "}
+                                            Edit
+                                          </a>
+                                          <a
+                                            onClick={() =>
+                                              handleDeleteNote(n.id)
+                                            }
+                                            className="btn btn-danger mb-0"
+                                          >
+                                            <i className="bi bi-trash me-2" />{" "}
+                                            Delete
+                                          </a>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  ))}
+                                     {course?.note?.length < 1 && (
+                                    <p className="mt-3 p-3">No notes</p>
+                                  )}
                                   <hr />
                                 </div>
                               </div>
@@ -428,7 +495,7 @@ function CourseDetail() {
                                     </div>
                                     <div className="col-sm-6 col-lg-3">
                                       <a
-                                        href="#"
+                                      onClick={handleQuestionShow} 
                                         className="btn btn-primary mb-0 w-100"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalCreatePost"
@@ -532,15 +599,15 @@ function CourseDetail() {
 
 
       {/* Lecture Modal */}
-      <Modal show={null} size='lg' onHide={null}>
+      <Modal show={show} size='lg' onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Lesson: Lesson Title</Modal.Title>
+          <Modal.Title>Lesson: {variantItem.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ReactPlayer url={`url-here`} controls playing width={"100%"} height={"100%"} />
+          <ReactPlayer url={variantItem.title} controls playing width={"100%"} height={"100%"} />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={null}>Close</Button>
+          <Button variant="secondary" onClick={handleClose}>Close</Button>
         </Modal.Footer>
       </Modal>
 
@@ -548,25 +615,26 @@ function CourseDetail() {
       {/* Note Edit Modal */}
       <Modal show={noteShow} size='lg' onHide={handleNoteClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Note: Note Title</Modal.Title>
+          <Modal.Title>Note: {selectedNote?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form>
+          <form onSubmit={(e)=>{handleSubmitEditNote(e,selectedNote?.id)}}>
             <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">Note Title</label>
-              <input defaultValue={null} name='title' type="text" className="form-control" />
+              <input defaultValue={selectedNote?.title}   onChange={handleNoteChange} name='title' type="text" className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="exampleInputPassword1" className="form-label">Note Content</label>
-              <textarea onChange={null} defaultValue={null} name='note' className='form-control' cols="30" rows="10"></textarea>
+              <textarea  defaultValue={selectedNote?.note} name='note' 
+                              onChange={handleNoteChange} className='form-control' cols="30" rows="10"></textarea>
             </div>
-            <button type="button" className="btn btn-secondary me-2" onClick={null}><i className='fas fa-arrow-left'></i> Close</button>
+            <button type="button" className="btn btn-secondary me-2" onClick={handleNoteClose}><i className='fas fa-arrow-left'></i> Close</button>
             <button type="submit" className="btn btn-primary">Save Note <i className='fas fa-check-circle'></i></button>
           </form>
         </Modal.Body>
       </Modal>
 
-      {/* Note Edit Modal */}
+      {/* Conversation Modal */}
       <Modal show={ConversationShow} size='lg' onHide={handleConversationClose}>
         <Modal.Header closeButton>
           <Modal.Title>Lesson: 123</Modal.Title>
@@ -693,7 +761,27 @@ function CourseDetail() {
           </div>
         </Modal.Body>
       </Modal>
-
+{/* Ask Question Model */}
+<Modal show={addQuestionShow} size='lg' onHide={handleQuestionClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Ask Questions: {selectedNote?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={handleSaveQuestion}>
+            <div className="mb-3">
+              <label htmlFor="exampleInputEmail1" className="form-label">Question title</label>
+              <input value={createMessage.message}   onChange={handleMessageChange} name='title' type="text" className="form-control" />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="exampleInputPassword1" className="form-label">Question Message</label>
+              <textarea  defaultValue={selectedNote?.note} name='message' 
+                              onChange={handleNoteChange} className='form-control' cols="30" rows="10"></textarea>
+            </div>
+            <button type="button" className="btn btn-secondary me-2" onClick={handleMessageChange}><i className='fas fa-arrow-left'></i> Close</button>
+            <button type="submit" className="btn btn-primary">Send Mesaage <i className='fas fa-check-circle'></i></button>
+          </form>
+        </Modal.Body>
+      </Modal>
       <BaseFooter />
     </>
   )

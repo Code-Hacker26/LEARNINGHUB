@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password
 from django.db import models
 from django.db.models.functions import ExtractMonth
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
+from django.contrib.auth.hashers import check_password
 
 from api import serializer as api_serializer
 from api import models as api_models
@@ -131,6 +131,15 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
         slug = self.kwargs['slug']
         course = api_models.Course.objects.get(slug=slug, platform_status="Published", teacher_course_status="Published")
         return course
+
+class ProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = api_serializer.ProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        user = User.objects.get(id=user_id)
+        return Profile.objects.get(user=user)
 
 
 class CartAPIView(generics.CreateAPIView):
@@ -1132,7 +1141,7 @@ class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
         serializer.save(course=course_instance) 
 
 
-class CourseDetailAPIView(generics.RetrieveDestroyAPIView):
+class TeacherCourseDetailAPIView(generics.RetrieveDestroyAPIView):
     serializer_class = api_serializer.CourseSerializer
     permission_classes = [AllowAny]
 
@@ -1184,7 +1193,7 @@ class ChangePasswordAPIView(generics.CreateAPIView):
 
         user = User.objects.get(id=user_id)
         if user is not None:
-            if check_password(old_password, user.password):
+            if check_password(new_password,old_password, user.password):
                 user.set_password(new_password)
                 user.save()
                 return Response({"message": "Password changed successfully", "icon": "success"})

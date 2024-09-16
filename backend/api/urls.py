@@ -11,8 +11,7 @@ urlpatterns = [
     path("user/password-change/" , api_views.PasswordChangeAPIView.as_view()),
     path("user/change-password/", api_views.ChangePasswordAPIView.as_view()),
 
-    
-
+    path("user/profile/<user_id>/", api_views.ProfileAPIView.as_view()),
     path("course/category/", api_views.CategoryListAPIView.as_view()),
     path("course/course-list/", api_views.CourseListAPIView.as_view()),
     path("course/course-detail/<slug>/", api_views.CourseDetailAPIView.as_view()),
@@ -59,7 +58,7 @@ urlpatterns = [
     path("teacher/noti-detail/<teacher_id>/<noti_id>", api_views.TeacherNotificationDetailAPIView.as_view()),
     path("teacher/course-create/", api_views.CourseCreateAPIView.as_view()),
     path("teacher/course-update/<teacher_id>/<course_id>/", api_views.CourseUpdateAPIView.as_view()),
-    path("teacher/course-detail/<course_id>/", api_views.CourseDetailAPIView.as_view()),
+    path("teacher/course-detail/<course_id>/", api_views.TeacherCourseDetailAPIView.as_view()),
     path("teacher/course/variant-delete/<variant_id>/<teacher_id>/<course_id>/", api_views.CourseVariantDeleteAPIView.as_view()),
     path("teacher/course/variant-item-delete/<variant_id>/<variant_item_id>/<teacher_id>/<course_id>/", api_views.CourseVariantItemDeleteAPIVIew.as_view()),
 

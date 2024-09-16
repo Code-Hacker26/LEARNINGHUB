@@ -6,13 +6,15 @@ import apiInstance from "./utils/axios";
 import MainWrapper from "./layouts/MainWrapper";
 import PrivateRoute from "./layouts/PrivateRoute";
 import Register from "../src/views/auth/Register";
+import useAxios from "./utils/useAxios";
+import UserData from "./views/plugin/UserData";
 
 import Login from "../src/views/auth/Login";
 import Logout from "./views/auth/Logout";
 import ForgotPassword from "./views/auth/ForgotPassword";
 import CreateNewPassword from "./views/auth/CreateNewPassword";
 import StudentChangePassword from "./views/student/ChangePassword";
-
+import Wishlist from "./views/student/Wishlist";
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
 import Cart from "./views/base/Cart";
@@ -20,22 +22,31 @@ import CartId from "./views/plugin/CartId";
 import Checkout from "./views/base/Checkout";
 import Success from "./views/base/Success";
 import Search from "./views/base/Search";
-
+import StudentProfile from "./views/student/Profile";
 import StudentDashboard from './views/student/Dashboard'
 import StudentCourses from './views/student/Courses'
 import StudentCourseDetail from "./views/student/CourseDetail";
+import Profile from "./views/student/Profile";
 function App() {
   const [cartCount, setCartCount] = useState(0);
-  // const [profile, setProfile] = useState([]);
+  const [profile, setProfile] = useState([]);
 
   useEffect(() => {
     apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
       setCartCount(res.data?.length);
     });
+    useAxios()
+    .get(`user/profile/${UserData()?.user_id}/`)
+    .then((res) => {
+      setProfile(res.data);
+    });
 
    }, []);
+   
   return (
     <CartContext.Provider value={[cartCount, setCartCount]}>
+      <ProfileContext.Provider value={[profile,setProfile]}>
+
     <BrowserRouter>
       <MainWrapper>
         <Routes>
@@ -70,9 +81,14 @@ function App() {
                 path="/student/courses/:enrollment_id/"
                 element={<StudentCourseDetail />}
               />
+               <Route path="/student/wishlist/" element={<Wishlist />} />
+               <Route path="/student/profile/" element={<StudentProfile />} />
+             
+
         </Routes>
       </MainWrapper>
     </BrowserRouter>
+    </ProfileContext.Provider>
     </CartContext.Provider>
   )
 }

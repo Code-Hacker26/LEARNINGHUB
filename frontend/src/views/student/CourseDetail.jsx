@@ -1,16 +1,18 @@
-import React, { useState ,useEffect} from 'react'
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ReactPlayer from 'react-player'
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import useAxios from "../../utils/useAxios";
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
-
-
+import UserData from "../plugin/UserData";
+import moment from 'moment';
+import Toast from "../plugin/Toast";
 
 function CourseDetail() {
 
@@ -24,7 +26,13 @@ function CourseDetail() {
     title: "",
     message: "",
   });
+  const [createReview, setCreateReview] = useState({ rating: 1, review: "" });
+ 
+  const [studentReview, setStudentReview] = useState([]);
 
+  const [questions,setQuestions]=useState([])
+  const [selectedConversation, setSelectedConversation] = useState(null);
+const lastElementRef=useRef()
   // pla lecture modal
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -40,7 +48,9 @@ function CourseDetail() {
 
   const [ConversationShow, setConversationShow] = useState(false);
   const handleConversationClose = () => setConversationShow(false);
-  const handleConversationShow = () => { setConversationShow(true); }
+  const handleConversationShow = (Conversation) => { setConversationShow(true); 
+    setSelectedConversation(Conversation)
+   }
   const [selectedNote, setSelectedNote] = useState(null);
 
 
@@ -73,9 +83,8 @@ function CourseDetail() {
       ...markAsCompletedStatus,
       [key]: "Updating",
     });
-  }
-
-  const formdata = new FormData();
+    
+    const formdata = new FormData();
     formdata.append("user_id", UserData()?.user_id || 0);
     formdata.append("course_id", course.course?.id);
     formdata.append("variant_item_id", variantItemId);
@@ -89,6 +98,7 @@ function CourseDetail() {
           [key]: "Updated",
         });
       });
+    }
   
       const handleNoteChange = (event) => {
         setCreateNote({
@@ -126,27 +136,28 @@ function CourseDetail() {
         console.log(error);
       }
     };
-  const handleSubmitEditNote =(e,noteId)=>{
-    e.preventDefault();
-    const formdata = new FormData();
-
-    formdata.append("user_id", UserData()?.user_id);
-    formdata.append("enrollment_id", param.enrollment_id);
-    formdata.append("title", createNote.title || selectedNote?.title);
-    formdata.append("note", createNote.note || selectedNote?.note);
-    useAxios()
-    .patch(
-      `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
-      formdata
-    )
-    .then((res) => {
-      fetchCourseDetail();
-      Toast().fire({
-        icon: "success",
-        title: "Note updated",
-      });
-    });
-  }
+    const handleSubmitEditNote = (e, noteId) => {
+      e.preventDefault();
+      const formdata = new FormData();
+  
+      formdata.append("user_id", UserData()?.user_id);
+      formdata.append("enrollment_id", param.enrollment_id);
+      formdata.append("title", createNote.title || selectedNote?.title);
+      formdata.append("note", createNote.note || selectedNote?.note);
+  
+      useAxios()
+        .patch(
+          `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
+          formdata
+        )
+        .then((res) => {
+          fetchCourseDetail();
+          Toast().fire({
+            icon: "success",
+            title: "Note updated",
+          });
+        });
+    };
 
   const handleDeleteNote = (noteId) => {
     useAxios()
@@ -192,6 +203,92 @@ function CourseDetail() {
         });
       });
   };
+
+  const sendNewMessage = async (e) => {
+    e.preventDefault();
+    const formdata = new FormData();
+    formdata.append("course_id", course.course?.id);
+    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("message", createMessage.message);
+    formdata.append("qa_id", selectedConversation?.qa_id);
+
+    useAxios()
+      .post(`student/question-answer-message-create/`, formdata)
+      .then((res) => {
+        setSelectedConversation(res.data.question);
+      });
+  };
+
+  useEffect(() => {
+    if (lastElementRef.current) {
+      lastElementRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [selectedConversation]);
+
+  const handleSearchQuestion = (event) => {
+    const query = event.target.value.toLowerCase();
+    if (query === "") {
+      fetchCourseDetail();
+    } else {
+      const filtered = questions?.filter((question) => {
+        return question.title.toLowerCase().includes(query);
+      });
+      setQuestions(filtered);
+    }
+  };
+  const handleReviewChange = (event) => {
+    setCreateReview({
+      ...createReview,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleCreateReviewSubmit = (e) => {
+    e.preventDefault();
+
+    const formdata = new FormData();
+    formdata.append("course_id", course.course?.id);
+    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("rating", createReview.rating);
+    formdata.append("review", createReview.review);
+
+    useAxios()
+      .post(`student/rate-course/`, formdata)
+      .then((res) => {
+        console.log(res.data);
+        fetchCourseDetail();
+        Toast().fire({
+          icon: "success",
+          title: "Review created",
+        });
+      });
+  };
+
+  
+  const handleUpdateReviewSubmit = (e) => {
+    e.preventDefault();
+
+    const formdata = new FormData();
+    formdata.append("course", course.course?.id);
+    formdata.append("user", UserData()?.user_id);
+    formdata.append("rating", createReview.rating || studentReview?.rating);
+    formdata.append("review", createReview.review || studentReview?.review);
+
+    useAxios()
+      .patch(
+        `student/review-detail/${UserData()?.user_id}/${studentReview?.id}/`,
+        formdata
+      )
+      .then((res) => {
+        console.log(res.data);
+        fetchCourseDetail();
+        Toast().fire({
+          icon: "success",
+          title: "Review updated",
+        });
+      });
+  };
+
   return (
     <>
       <BaseHeader />
@@ -409,7 +506,7 @@ function CourseDetail() {
                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                                           </div>
                                           <div className="modal-body">
-                                            <form onSubmit={{handleSubmitCreateNote}}>
+                                            <form onSubmit={handleSubmitCreateNote}>
                                               <div className="mb-3">
                                                 <label htmlFor="exampleInputEmail1" className="form-label">
                                                   Note Title
@@ -487,7 +584,7 @@ function CourseDetail() {
                                     {/* Search */}
                                     <div className="col-sm-6 col-lg-9">
                                       <div className="position-relative">
-                                        <input className="form-control pe-5 bg-transparent" type="search" placeholder="Search" aria-label="Search" />
+                                        <input className="form-control pe-5 bg-transparent" type="search" placeholder="Search" aria-label="Search" onChange={handleSearchQuestion} />
                                         <button className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset" type="submit">
                                           <i className="fas fa-search fs-6 " />
                                         </button>
@@ -509,12 +606,14 @@ function CourseDetail() {
                                 <div className="card-body p-0 pt-3">
                                   <div className="vstack gap-3 p-3">
                                     {/* Question item START */}
+                                    {questions?.map((q,index)=>(
+
                                     <div className="shadow rounded-3 p-3">
                                       <div className="d-sm-flex justify-content-sm-between mb-3">
                                         <div className="d-flex align-items-center">
                                           <div className="avatar avatar-sm flex-shrink-0">
                                             <img
-                                              src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg"
+                                              src={q.profile.image}
                                               className="avatar-img rounded-circle"
                                               alt="avatar"
                                               style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
@@ -522,15 +621,16 @@ function CourseDetail() {
                                           </div>
                                           <div className="ms-2">
                                             <h6 className="mb-0">
-                                              <a href="#" className='text-decoration-none text-dark'>Angelina Poi</a>
+                                              <a href="#" className='text-decoration-none text-dark'>{q.profile.full_name}</a>
                                             </h6>
-                                            <small>Asked 10 Hours ago</small>
+                                            <small>{moment(q.date).format("DD MMM YYYY")}</small>
                                           </div>
                                         </div>
                                       </div>
-                                      <h5>How can i fix this bug?</h5>
-                                      <button className='btn btn-primary btn-sm mb-3 mt-3' onClick={handleConversationShow}>Join Conversation <i className='fas fa-arrow-right'></i></button>
+                                      <h5>{q.title}</h5>
+                                      <button className='btn btn-primary btn-sm mb-3 mt-3' onClick={()=>handleConversationShow(q)}>Join Conversation <i className='fas fa-arrow-right'></i></button>
                                     </div>
+                                    ))}
 
                                   </div>
                                 </div>
@@ -548,13 +648,17 @@ function CourseDetail() {
                                   {/* Title */}
                                   <h4 className="mb-3 p-3">Leave a Review</h4>
                                   <div className="mt-2">
-                                    <form className="row g-3 p-3">
+                                   {!studentReview && (
+                                    <form onSubmit={handleUpdateReviewSubmit} className="row g-3 p-3">
 
                                       {/* Rating */}
                                       <div className="col-12 bg-light-input">
                                         <select
                                           id="inputState2"
                                           className="form-select js-choice"
+                                           onChange={handleReviewChange}
+                                           name="rating"
+                                           defaultValue={studentReview.rating}
                                         >
                                           <option value={1}>★☆☆☆☆ (1/5)</option>
                                           <option value={2}>★★☆☆☆ (2/5)</option>
@@ -570,16 +674,73 @@ function CourseDetail() {
                                           id="exampleFormControlTextarea1"
                                           placeholder="Your review"
                                           rows={3}
-                                          defaultValue={""}
-                                        />
+                                          onChange={handleReviewChange}
+                                          name="review"
+                                          defaultValue={studentReview.review}
+/>
                                       </div>
                                       {/* Button */}
                                       <div className="col-12">
                                         <button type="submit" className="btn btn-primary mb-0">
-                                          Post Review
+                                          Update Review
                                         </button>
                                       </div>
                                     </form>
+                                    )}
+                                    {studentReview && (
+                                      <form
+                                        className="row g-3 p-3"
+                                        onSubmit={handleUpdateReviewSubmit}
+                                      >
+                                        {/* Rating */}
+                                        <div className="col-12 bg-light-input">
+                                          <select
+                                            id="inputState2"
+                                            className="form-select js-choice"
+                                            onChange={handleReviewChange}
+                                            name="rating"
+                                            value={course.review.rating}
+                                          >
+                                            <option value={1}>
+                                              ★☆☆☆☆ (1/5)
+                                            </option>
+                                            <option value={2}>
+                                              ★★☆☆☆ (2/5)
+                                            </option>
+                                            <option value={3}>
+                                              ★★★☆☆ (3/5)
+                                            </option>
+                                            <option value={4}>
+                                              ★★★★☆ (4/5)
+                                            </option>
+                                            <option value={5}>
+                                              ★★★★★ (5/5)
+                                            </option>
+                                          </select>
+                                        </div>
+                                        {/* Message */}
+                                        <div className="col-12 bg-light-input">
+                                          <textarea
+                                            className="form-control"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your review"
+                                            rows={3}
+                                            onChange={handleReviewChange}
+                                            name="review"
+                                            defaultValue={studentReview.review}
+                                          />
+                                        </div>
+                                        {/* Button */}
+                                        <div className="col-12">
+                                          <button
+                                            type="submit"
+                                            className="btn btn-primary mb-0"
+                                          >
+                                            Update Review
+                                          </button>
+                                        </div>
+                                      </form>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -601,10 +762,10 @@ function CourseDetail() {
       {/* Lecture Modal */}
       <Modal show={show} size='lg' onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Lesson: {variantItem.title}</Modal.Title>
+          <Modal.Title>Lesson: {variantItem?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ReactPlayer url={variantItem.title} controls playing width={"100%"} height={"100%"} />
+          <ReactPlayer url={variantItem?.title} controls playing width={"100%"} height={"100%"} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>Close</Button>
@@ -618,18 +779,42 @@ function CourseDetail() {
           <Modal.Title>Note: {selectedNote?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={(e)=>{handleSubmitEditNote(e,selectedNote?.id)}}>
+        <form onSubmit={(e) => handleSubmitEditNote(e, selectedNote?.id)}>
             <div className="mb-3">
-              <label htmlFor="exampleInputEmail1" className="form-label">Note Title</label>
-              <input defaultValue={selectedNote?.title}   onChange={handleNoteChange} name='title' type="text" className="form-control" />
+              <label htmlFor="exampleInputEmail1" className="form-label">
+                Note Title
+              </label>
+              <input
+                defaultValue={selectedNote?.title}
+                name="title"
+                onChange={handleNoteChange}
+                type="text"
+                className="form-control"
+              />
             </div>
             <div className="mb-3">
-              <label htmlFor="exampleInputPassword1" className="form-label">Note Content</label>
-              <textarea  defaultValue={selectedNote?.note} name='note' 
-                              onChange={handleNoteChange} className='form-control' cols="30" rows="10"></textarea>
+              <label htmlFor="exampleInputPassword1" className="form-label">
+                Note Content
+              </label>
+              <textarea
+                defaultValue={selectedNote?.note}
+                name="note"
+                onChange={handleNoteChange}
+                className="form-control"
+                cols="30"
+                rows="10"
+              ></textarea>
             </div>
-            <button type="button" className="btn btn-secondary me-2" onClick={handleNoteClose}><i className='fas fa-arrow-left'></i> Close</button>
-            <button type="submit" className="btn btn-primary">Save Note <i className='fas fa-check-circle'></i></button>
+            <button
+              type="button"
+              className="btn btn-secondary me-2"
+              onClick={handleNoteClose}
+            >
+              <i className="fas fa-arrow-left"></i> Close
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Save Note <i className="fas fa-check-circle"></i>
+            </button>
           </form>
         </Modal.Body>
       </Modal>
@@ -637,16 +822,20 @@ function CourseDetail() {
       {/* Conversation Modal */}
       <Modal show={ConversationShow} size='lg' onHide={handleConversationClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Lesson: 123</Modal.Title>
+          <Modal.Title>Lesson: {selectedConversation?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="border p-2 p-sm-4 rounded-3">
             <ul className="list-unstyled mb-0" style={{ overflowY: "scroll", height: "500px" }}>
+            {selectedConversation?.messages?.map((m, index) => (
               <li className="comment-item mb-3">
                 <div className="d-flex">
                   <div className="avatar avatar-sm flex-shrink-0">
                     <a href="#">
-                      <img className="avatar-img rounded-circle" src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="womans image" />
+                      <img className="avatar-img rounded-circle" src={ m.profile.image?.startsWith("http://127.0.0.1:8000")
+                              ? m.profile.image
+                              : `http://127.0.0.1:8000${m.profile.image}`
+                          } style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="womans image" />
                     </a>
                   </div>
                   <div className="ms-2">
@@ -655,10 +844,10 @@ function CourseDetail() {
                       <div className="d-flex w-100 justify-content-center">
                         <div className="me-2 ">
                           <h6 className="mb-1 lead fw-bold">
-                            <a href="#!" className='text-decoration-none text-dark'> Louis Ferguson </a><br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>5hrs Ago</span>
+                            <a href="#!" className='text-decoration-none text-dark'> {m.profile.full_name}{" "} </a><br />
+                            <span style={{ fontSize: "12px", color: "gray" }}>{moment(m.date).format("DD MMM YYYY")}</span>
                           </h6>
-                          <p className="mb-0 mt-3  ">Removed demands expense account
+                          <p className="mb-0 mt-3  ">{m.message}
                           </p>
                         </div>
                       </div>
@@ -667,96 +856,20 @@ function CourseDetail() {
                   </div>
                 </div>
               </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img className="avatar-img rounded-circle" src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="womans image" />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a href="#!" className='text-decoration-none text-dark'> Louis Ferguson </a><br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>5hrs Ago</span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">Removed demands expense account from the debby building in a hall  town tak with
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img className="avatar-img rounded-circle" src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="womans image" />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a href="#!" className='text-decoration-none text-dark'> Louis Ferguson </a><br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>5hrs Ago</span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">Removed demands expense account
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </li>
-
-              <li className="comment-item mb-3">
-                <div className="d-flex">
-                  <div className="avatar avatar-sm flex-shrink-0">
-                    <a href="#">
-                      <img className="avatar-img rounded-circle" src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="womans image" />
-                    </a>
-                  </div>
-                  <div className="ms-2">
-                    {/* Comment by */}
-                    <div className="bg-light p-3 rounded w-100">
-                      <div className="d-flex w-100 justify-content-center">
-                        <div className="me-2 ">
-                          <h6 className="mb-1 lead fw-bold">
-                            <a href="#!" className='text-decoration-none text-dark'> Louis Ferguson </a><br />
-                            <span style={{ fontSize: "12px", color: "gray" }}>5hrs Ago</span>
-                          </h6>
-                          <p className="mb-0 mt-3  ">Removed demands expense account
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </li>
+ ))}
+             <div ref={lastElementRef}></div> 
             </ul>
 
-            <form class="w-100 d-flex">
-              <textarea name='message' class="one form-control pe-4 bg-light w-75" id="autoheighttextarea" rows="2" placeholder="What's your question?"></textarea>
-              <button class="btn btn-primary ms-2 mb-0 w-25" type="button">Post <i className='fas fa-paper-plane'></i></button>
+            <form onSubmit={sendNewMessage} class="w-100 d-flex">
+              <textarea name='message' onChange={handleMessageChange} class="one form-control pe-4 bg-light w-75" id="autoheighttextarea" rows="2" placeholder="What's your question?"></textarea>
+              <button class="btn btn-primary ms-2 mb-0 w-25" type="submit">Post <i className='fas fa-paper-plane'></i></button>
             </form>
 
-            <form class="w-100">
+            {/* <form class="w-100">
               <input name='title' type="text" className="form-control mb-2" placeholder='Question Title' />
               <textarea name='message' class="one form-control pe-4 mb-2 bg-light" id="autoheighttextarea" rows="5" placeholder="What's your question?"></textarea>
               <button class="btn btn-primary mb-0 w-25" type="button">Post <i className='fas fa-paper-plane'></i></button>
-            </form>
+            </form> */}
 
           </div>
         </Modal.Body>
@@ -770,7 +883,7 @@ function CourseDetail() {
           <form onSubmit={handleSaveQuestion}>
             <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">Question title</label>
-              <input value={createMessage.message}   onChange={handleMessageChange} name='title' type="text" className="form-control" />
+              <input value={createMessage.title}   onChange={handleMessageChange} name='title' type="text" className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="exampleInputPassword1" className="form-label">Question Message</label>

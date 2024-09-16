@@ -3,7 +3,6 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
-
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
@@ -20,7 +19,9 @@ function ChangePassword() {
       ...password,
       [event.target.name]: event.target.value,
     });
+    
   };
+  // console.log(old_password,new_password,confirm_password);
   console.log(password);
 
   const changePasswordSubmit = async (e) => {
@@ -32,11 +33,12 @@ function ChangePassword() {
         title: "Password does not match",
       });
     }
+   
 
     const formdata = new FormData();
     formdata.append("user_id", UserData()?.user_id);
     formdata.append("old_password", password.old_password);
-    formdata.append("new_password", password.new_passowrd);
+    formdata.append("new_password", password.new_password);
 
     await useAxios()
       .post(`user/change-password/`, formdata)
@@ -48,7 +50,6 @@ function ChangePassword() {
         });
       });
   };
-
   return (
     <>
       <BaseHeader />
@@ -103,7 +104,7 @@ function ChangePassword() {
                           placeholder="**************"
                           required=""
                           name="new_password"
-                          value={password.new_passowrd}
+                          value={password.new_password}
                           onChange={handlePasswordChange}
                         />
                       </div>

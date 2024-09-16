@@ -11,39 +11,39 @@ import UserData from '../plugin/UserData'
 
 
 function Courses() {
-  const [courses, setCourses] = useState([]);
-  const [stats, setStats] = useState([]);
-  const [fetching, setFetching] = useState(true);
+    const [courses, setCourses] = useState([]);
+    const [stats, setStats] = useState([]);
+    const [fetching, setFetching] = useState(true);
+  
+    const fetchData = () => {
+        setFetching(false);//set true
+        
+    
+        useAxios()
+          .get(`student/course-list/${UserData()?.user_id}/`)
+          .then((res) => {
+            console.log(res.data);
+            setCourses(res.data);
+            setFetching(false);
+          });
+      };
+      useEffect(() => {
+        fetchData();
+      }, []);
 
-  const fetchData = () => {
-    setFetching(true);
-
-    useAxios()
-      .get(`student/course-list/${UserData()?.user_id}/`)
-      .then((res) => {
-        console.log(res.data);
-        setCourses(res.data);
-        setFetching(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleSearch = (event) => {
-    const query = event.target.value.toLowerCase();
-    console.log(query);
-    if (query === "") {
-      fetchData();
-    } else {
-      const filtered = courses.filter((c) => {
-        return c.course.title.toLowerCase().includes(query);
-      });
-      setCourses(filtered);
-    }
-  };
-    return (
+      const handleSearch = (event) => {
+        const query = event.target.value.toLowerCase();
+        console.log(query);
+        if (query === "") {
+          fetchData();
+        } else {
+          const filtered = courses.filter((c) => {
+            return c.course.title.toLowerCase().includes(query);
+          });
+          setCourses(filtered);
+        }
+      };
+          return (
         <>
             <BaseHeader />
 

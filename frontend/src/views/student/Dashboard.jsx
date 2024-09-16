@@ -15,7 +15,7 @@ function Dashboard() {
     const [fetching, setFetching] = useState(true);
   
     const fetchData = () => {
-        setFetching(false);//set true
+        setFetching(true);//set true
         useAxios()
           .get(`student/summary/${UserData()?.user_id}/`)
           .then((res) => {
@@ -185,6 +185,7 @@ function Dashboard() {
                                                     className="btn btn-success btn-sm mt-3" >
                                                      start Course
                                                       <i className="fas fa-arrow-right ms-2"></i>
+                                                    
                                                     </Link>
                                                   )}
 

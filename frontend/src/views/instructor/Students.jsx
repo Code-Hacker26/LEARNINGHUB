@@ -7,8 +7,6 @@ import BaseFooter from '../partials/BaseFooter'
 import useAxios from '../../utils/useAxios'
 import UserData from '../plugin/UserData'
 import { teacherId } from "../../utils/constants";
-import Rater from "react-rater";
-import "react-rater/lib/react-rater.css"
 
 function Students() {
   const [student, setStudents] = useState([]);

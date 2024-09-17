@@ -61,6 +61,7 @@ NOTI_TYPE = (
 
 # Create your models here.
 class Teacher(models.Model):
+    # id=models.IntegerField(max_length=10)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.FileField(upload_to="course-file", blank=True, null=True, default="default.jpg")
     full_name = models.CharField(max_length=100)

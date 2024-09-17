@@ -6,7 +6,7 @@ import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
-// import Toast from "../plugin/Toast";
+import Toast from "../plugin/Toast";
 import { ProfileContext } from "../plugin/Context";
 
 function Profile() {
@@ -58,30 +58,6 @@ function Profile() {
     }
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-
-    const res = await useAxios().get(`user/profile/${UserData()?.user_id}/`);
-    const formdata = new FormData();
-    if (profileData.image && profileData.image !== res.data.image) {
-      formdata.append("image", profileData.image);
-    }
-
-    formdata.append("full_name", profileData.full_name);
-    formdata.append("about", profileData.about);
-    formdata.append("country", profileData.country);
-
-    await useAxios()
-      .patch(`user/profile/${UserData()?.user_id}/`, formdata, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setProfile(res.data);
-      });
-  };
 
   console.log(imagePreview);
 

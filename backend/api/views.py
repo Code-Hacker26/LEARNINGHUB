@@ -954,9 +954,10 @@ class CourseCreateAPIView(generics.CreateAPIView):
                 index = key.split('[')[1].split(']')[0]
                 title = value
 
-                variant_data = {'title': title}
+                variant_dict = {'title': title}
                 item_data_list = []
                 current_item = {}
+                variant_data=[]
 
                 for item_key, item_value in self.request.data.items():
                     if f'variants[{index}][items]' in item_key:
@@ -970,7 +971,7 @@ class CourseCreateAPIView(generics.CreateAPIView):
                 if current_item:
                     item_data_list.append(current_item)
 
-                variant_data.append({'variant_data': variant_data, 'variant_item_data': item_data_list})
+                variant_data.append({'variant_data': variant_dict, 'variant_item_data': item_data_list})
 
         for data_entry in variant_data:
             variant = api_models.Variant.objects.create(title=data_entry['variant_data']['title'], course=course_instance)

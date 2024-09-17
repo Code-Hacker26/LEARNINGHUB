@@ -1,8 +1,3 @@
-
-// import Rater from "react-rater";
-import "react-rater/lib/react-rater.css"
-// import Useta from '../../utils/constants'
-
 import { useState, useEffect } from "react";
 import moment from "moment";
 
@@ -15,16 +10,18 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import Useta from "../plugin/UserData";
 import { teacherId } from "../../utils/constants";
+import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 
 function Coupon() {
-  const [show, setShow] = useState(false);
-  const [showAddCoupon, setShowAddCoupon] = useState(false);
   const [coupons, setCoupons] = useState([]);
   const [createCoupon, setCreateCoupon] = useState({ code: "", discount: 0 });
   const [selectedCoupon, setSelectedCoupon] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const [showAddCoupon, setShowAddCoupon] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = (coupon) => {
@@ -36,21 +33,13 @@ function Coupon() {
   const handleAddCouponShow = () => setShowAddCoupon(true);
 
   const fetchCoupons = () => {
-    const formdata = new FormData();
-    
     useAxios()
-    .post(`teacher/coupon-list/${UserData()?.teacher_id}/`, formdata)
-    .then((res) => {
-      console.log(res.data);
-      setCoupons(res.data);
-      fetchCoupons();
-      handleAddCouponClose();
-      Toast().fire({
-        icon: "success",
-        title: "Coupon created successfully",
+      .get(`teacher/coupon-list/1/`)
+      .then((res) => {
+        console.log(res.data);
+        setCoupons(res.data);
       });
-    });
-};
+  };
 
   useEffect(() => {
     fetchCoupons();
@@ -68,12 +57,12 @@ function Coupon() {
 
     const formdata = new FormData();
 
-    formdata.append("teacher", UserData()?.teacher_id);
+    formdata.append("teacher",1);
     formdata.append("code", createCoupon.code);
     formdata.append("discount", createCoupon.discount);
 
     useAxios()
-      .post(`teacher/coupon-list/${UserData()?.teacher_id}/`, formdata)
+      .post(`teacher/coupon-list/1/`, formdata)
       .then((res) => {
         console.log(res.data);
         fetchCoupons();
@@ -87,7 +76,7 @@ function Coupon() {
 
   const handleDeleteCoupon = (couponId) => {
     useAxios()
-      .delete(`teacher/coupon-detail/${UserData()?.teacher_id}/${couponId}/`)
+      .delete(`teacher/coupon-detail/1/${couponId}/`)
       .then((res) => {
         console.log(res.data);
         fetchCoupons();
@@ -102,14 +91,14 @@ function Coupon() {
     e.preventDefault();
 
     const formdata = new FormData();
-
-    formdata.append("teacher", UserData()?.teacher_id);
+    const x=1;
+    formdata.append("teacher", x);
     formdata.append("code", createCoupon.code);
     formdata.append("discount", createCoupon.discount);
 
     useAxios()
       .patch(
-        `teacher/coupon-detail/${UserData()?.teacher_id}/${selectedCoupon.id}/`,
+        `teacher/coupon-detail/1/${selectedCoupon.id}/`,
         formdata
       )
       .then((res) => {
@@ -156,7 +145,6 @@ function Coupon() {
                   <ul className="list-group list-group-flush">
                     {/* List group item */}
                     {coupons?.map((c, index) => (
-          
                       <li className="list-group-item p-4 shadow rounded-3 mb-3">
                         <div className="d-flex">
                           <div className="ms-3 mt-2">
@@ -185,7 +173,7 @@ function Coupon() {
                               </p>
                               <p>
                                 <button
-                                  className="btn btn-outline-secondary"
+                                  class="btn btn-outline-secondary"
                                   type="button"
                                   onClick={() => handleShow(c)}
                                 >
@@ -193,7 +181,7 @@ function Coupon() {
                                 </button>
 
                                 <button
-                                  className="btn btn-danger ms-2"
+                                  class="btn btn-danger ms-2"
                                   type="button"
                                   onClick={() => handleDeleteCoupon(c.id)}
                                 >
@@ -216,40 +204,39 @@ function Coupon() {
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Update Coupon - <span className="fw-bold">{selectedCoupon.code}</span>
+            Update Coupon -{" "}
+            <span className="fw-bold">{selectedCoupon.code}</span>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={handleCouponSubmit}>
-            <div className="mb-3">
-              <label htmlFor="exampleInputEmail1" className="form-label">
+          <form onSubmit={handleCouponUpdateSubmit}>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">
                 Code
               </label>
               <input
                 type="text"
                 placeholder="Code"
-                defaultvalue={selectedCoupon.code}
+                defaultValue={selectedCoupon.code}
                 className="form-control"
                 name="code"
-                id=""
                 onChange={handleCreateCouponChange}
               />
-              <label htmlFor="exampleInputEmail1" className="form-label mt-3">
+              <label for="exampleInputEmail1" class="form-label mt-3">
                 Discount
               </label>
               <input
                 type="text"
                 placeholder="Discount"
-                defaultvalue={selectedCoupon.discount}
+                defaultValue={selectedCoupon.discount}
                 className="form-control"
                 name="discount"
-                id=""
                 onChange={handleCreateCouponChange}
-
+                id=""
               />
             </div>
 
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
               Update Coupon <i className="fas fa-check-circle"> </i>
             </button>
 
@@ -266,8 +253,8 @@ function Coupon() {
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleCouponSubmit}>
-            <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">
                 Code
               </label>
               <input
@@ -276,10 +263,9 @@ function Coupon() {
                 value={createCoupon.code}
                 className="form-control"
                 name="code"
-                id=""
                 onChange={handleCreateCouponChange}
               />
-              <label htmlFor="exampleInputEmail1" className="form-label mt-3">
+              <label for="exampleInputEmail1" class="form-label mt-3">
                 Discount
               </label>
               <input
@@ -288,13 +274,12 @@ function Coupon() {
                 value={createCoupon.discount}
                 className="form-control"
                 name="discount"
-                id=""
                 onChange={handleCreateCouponChange}
-
+                id=""
               />
             </div>
 
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
               Create Coupon <i className="fas fa-plus"> </i>
             </button>
 

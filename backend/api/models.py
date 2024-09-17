@@ -61,7 +61,6 @@ NOTI_TYPE = (
 
 # Create your models here.
 class Teacher(models.Model):
-    # id=models.IntegerField(max_length=10)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.FileField(upload_to="course-file", blank=True, null=True, default="default.jpg")
     full_name = models.CharField(max_length=100)
@@ -102,7 +101,7 @@ class Category(models.Model):
     
     def save(self, *args, **kwargs):
         if self.slug == "" or self.slug == None:
-            self.slug = slugify(self.title) 
+            self.slug = slugify(self.title) +self.pk
         super(Category, self).save(*args, **kwargs)
 
 
@@ -165,8 +164,8 @@ class Variant(models.Model):
     def variant_items(self):
         return VariantItem.objects.filter(variant=self)
     
-    # def items(self):
-    #     return VariantItem.objects.filter(variant=self)
+    def items(self):
+        return VariantItem.objects.filter(variant=self)
     
 
 class VariantItem(models.Model):

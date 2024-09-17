@@ -13,7 +13,7 @@ function Students() {
 
   useEffect(() => {
     useAxios()
-      .get(`teacher/student-lists/${UserData()?.teacher_id}/`)
+      .get(`teacher/student-lists/1/`)
       .then((res) => {
         console.log("res.data: ", res.data);
         setStudents(res.data);

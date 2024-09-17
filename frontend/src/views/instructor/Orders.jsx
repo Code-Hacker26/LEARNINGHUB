@@ -18,7 +18,7 @@ function Orders() {
 
     useEffect(() => {
       useAxios()
-        .get(`teacher/course-order-list/${UserData()?.teacher_id}/`)
+        .get(`teacher/course-order-list/1/`)
         .then((res) => {
           console.log(res.data);
           setOrders(res.data);

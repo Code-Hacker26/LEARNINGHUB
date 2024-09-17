@@ -62,7 +62,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class TeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ["id", "user", "image", "full_name", "bio", "facebook", "twitter", "linkedin", "about", "country", "students", "courses", "review",]
+        fields = [ "user", "image", "full_name", "bio", "facebook", "twitter", "linkedin", "about", "country", "students", "courses", "review",]
         model = api_models.Teacher
 
 
@@ -86,6 +86,7 @@ class VariantItemSerializer(serializers.ModelSerializer):
 
 class VariantSerializer(serializers.ModelSerializer):
     variant_items = VariantItemSerializer(many=True)  # Only this field
+    items = VariantItemSerializer(many=True)  # Only this field
 
     class Meta:
         fields = '__all__'

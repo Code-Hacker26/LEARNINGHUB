@@ -8,29 +8,27 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
-import { teacherId } from "../../utils/constants";
+
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 
-
 function TeacherNotification() {
-
   const [noti, setNoti] = useState([]);
 
   const fetchNoti = () => {
     useAxios()
-      .get(`teacher/noti-list/${UserData()?.teacher_id}/`)
+      .get(`teacher/noti-list/1/`)
       .then((res) => {
         setNoti(res.data);
         console.log(res.data);
       });
   };
+
   useEffect(() => {
     fetchNoti();
   }, []);
 
-  
   const handleMarkAsSeen = (notiId) => {
     const formdata = new FormData();
 
@@ -40,7 +38,7 @@ function TeacherNotification() {
 
     useAxios()
       .patch(
-        `teacher/noti-detail/${UserData()?.teacher_id}/${notiId}`,
+        `teacher/noti-detail/1/${notiId}`,
         formdata
       )
       .then((res) => {
@@ -114,8 +112,8 @@ function TeacherNotification() {
                         </div>
                       </li>
                     ))}
-                    {noti?.length < 1 && <p>No notifications</p>}
 
+                    {noti?.length < 1 && <p>No notifications</p>}
                   </ul>
                 </div>
               </div>

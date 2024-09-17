@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
-import moment from "moment";
-
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
-
 import useAxios from "../../utils/useAxios";
-import Useta from "../plugin/UserData";
-import { teacherId } from "../../utils/constants";
 import UserData from "../plugin/UserData";
 
 function Earning() {
@@ -20,44 +15,43 @@ function Earning() {
     useAxios()
       .get(`teacher/summary/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
       .get(`teacher/all-months-earning/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data);
         setEarning(res.data);
       });
 
     useAxios()
       .get(`teacher/best-course-earning/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data);
-        setBestSellingCourse(res.data);
+        // Sorting the courses by sales (descending order)
+        const sortedCourses = res.data.sort((a, b) => b.sales - a.sales);
+        setBestSellingCourse(sortedCourses);
       });
   }, []);
+
   return (
     <>
       <BaseHeader />
 
       <section className="pt-5 pb-5">
         <div className="container">
-          {/* Header Here */}
           <Header />
           <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
               <div className="card mb-4">
                 <div className="card-body">
                   <h3 className="mb-0">Earnings</h3>
                   <p className="mb-0">
-                    You have full control to manage your own account setting.
+                    You have full control to manage your own account settings.
                   </p>
                 </div>
               </div>
+
               <div className="card mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h4 className="mb-0">Earnings</h4>
@@ -109,14 +103,14 @@ function Earning() {
                   </div>
                 </div>
               </div>
-              {/* Card */}
+
+              {/* Best Selling Courses */}
               <div className="card mb-4">
                 <div className="card-header border-bottom-0">
                   <h3 className="mb-0 h4">Best Selling Courses</h3>
                 </div>
-                {/* Table */}
                 <div className="table-responsive">
-                  <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
+                  <table className="table mb-0 text-nowrap table-hover table-centered">
                     <thead className="table-light">
                       <tr>
                         <th>Courses</th>
@@ -127,7 +121,7 @@ function Earning() {
                     </thead>
                     <tbody>
                       {bestSellingCourse?.map((b, index) => (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             <a
                               href="#"
@@ -187,12 +181,11 @@ function Earning() {
                 </div>
               </div>
 
+              {/* Earning History */}
               <div className="card mb-4">
-                {/* Card header */}
                 <div className="card-header border-bottom-0">
                   <h3 className="h4 mb-3">Earning History</h3>
                 </div>
-                {/* Table */}
                 <div className="table-responsive">
                   <table className="table mb-0">
                     <thead className="table-light">
@@ -213,8 +206,8 @@ function Earning() {
                             {e.month === 6 && "June"}
                             {e.month === 7 && "July"}
                             {e.month === 8 && "August"}
-                            {e.month === 9 && "Sepetember"}
-                            {e.month === 10 && "OCtober"}
+                            {e.month === 9 && "September"}
+                            {e.month === 10 && "October"}
                             {e.month === 11 && "November"}
                             {e.month === 12 && "December"}
                           </td>

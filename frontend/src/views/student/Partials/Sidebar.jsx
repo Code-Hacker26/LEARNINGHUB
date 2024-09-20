@@ -45,10 +45,7 @@ function Sidebar() {
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to={`/student/question-answer/`}>
-                                    {" "}
-                                    <i className="fas fa-envelope"></i> Q/A{" "}
-                                </Link>
+                               
                             </li>
                         </ul>
 

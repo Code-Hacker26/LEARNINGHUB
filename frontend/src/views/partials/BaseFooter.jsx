@@ -8,11 +8,10 @@ function BaseFooter() {
           <div className="col-lg-4 col-md-6 col-12 text-white">
             {/* about company */}
             <div className="mb-4">
-              <h1>Desphixs</h1>
+              <h1>Learing hub</h1>
               <div className="mt-4">
                 <p>
-                  Desphixs is feature-rich components and beautifully Bootstrap UIKit
-                  for developers, built with bootstrap responsive framework.
+                Empowering learners with interactive courses and resources, our online platform makes learning accessible, flexible, and engaging from anywhere.
                 </p>
                 {/* social media */}
                 <div className="fs-4 mt-4">
@@ -129,14 +128,13 @@ function BaseFooter() {
             {/* contact info */}
             <div className="mb-4">
               <h3 className="fw-bold mb-3">Get in touch</h3>
-              <p>123 Main Street, U.S.A</p>
+              <p>123 Main ahmedabad, INDIA</p>
               <p className="mb-1">
                 Email:
-                <a href="#" className='text-white'> support@desphixs.com</a>
+                <a href="#" className='text-white'> support@.com</a>
               </p>
               <p>
-                Phone:
-                <span className="text-dark fw-semibold">(000) 123 456 789</span>
+                Phone:(+91)1234567890
               </p>
               <div className="d-flex">
                 <a href="#">
@@ -164,7 +162,7 @@ function BaseFooter() {
               <div className="me-4">
                 <span>
                   ©<span id="copyright5"></span>
-                  Desphixs
+                  Learning
                 </span>
               </div>
               <div>

@@ -20,7 +20,7 @@ function BaseHeader() {
             <nav className="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
                 <div className="container">
                     <Link className="navbar-brand" to="/">
-                        Desphixs
+                        Home
                     </Link>
                     <button
                         className="navbar-toggler"
@@ -35,17 +35,17 @@ function BaseHeader() {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                                 <Link className="nav-link" to="/pages/contact-us/">
                                     {" "}
                                     <i className="fas fa-phone"></i> Contact Us
                                 </Link>
-                            </li>
-                            <li className="nav-item">
+                            </li> */}
+                            {/* <li className="nav-item">
                                 <Link className="nav-link" to="/pages/about-us/">
                                     <i className="fas fa-address-card"></i> About Us
                                 </Link>
-                            </li>
+                            </li> */}
                             <li className="nav-item dropdown">
                                 <a
                                     className="nav-link dropdown-toggle"
@@ -83,14 +83,7 @@ function BaseHeader() {
                                             <i className="fas fa-star"></i> Reviews{" "}
                                         </Link>
                                     </li>
-                                    <li>
-                                        <Link
-                                            className="dropdown-item"
-                                            to={`/instructor/question-answer/`}
-                                        >
-                                            <i className="fas fa-envelope"></i> Q/A{" "}
-                                        </Link>
-                                    </li>
+                                   
                                     <li>
                                         <Link
                                             className="dropdown-item"
@@ -143,13 +136,7 @@ function BaseHeader() {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            className="dropdown-item"
-                                            to={`/student/question-answer/`}
-                                        >
-                                            {" "}
-                                            <i className="fas fa-envelope"></i> Q/A{" "}
-                                        </Link>
+                                       
                                     </li>
                                     <li>
                                         <Link className="dropdown-item" to={`/student/profile/`}>
@@ -160,15 +147,16 @@ function BaseHeader() {
                                 </ul>
                             </li>
                         </ul>
-                        <div className="d-flex" role="search">
-                            <input
+                        <div className="d-flex" role="search" >
+                        <input
                                 className="form-control me-2 w-100"
                                 type="search"
                                 placeholder="Search Courses"
                                 aria-label="Search Courses"
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
-                            <button
+
+                            <button 
                                 onClick={handleSearchSubmit}
                                 className="btn btn-outline-success w-50"
                                 type="submit"

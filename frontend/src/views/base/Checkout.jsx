@@ -63,9 +63,42 @@ function Checkout() {
     intent: "capture",
   };
 
-  const payWithStripe = (event) => {
+  const payWithStripe = async (event) => {
+    event.preventDefault();
     setPaymentLoading(true);
-    event.target.form.submit();
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/v1/payment/stripe-checkout/${order.oid}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Include any additional fields if required by your backend
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.redirect_url) {
+          // Redirect to the payment success page
+          window.location.href = data.redirect_url;
+        } else {
+          console.log(data.message);
+          setPaymentLoading(false);
+        }
+      } else {
+        console.log("Payment failed.");
+        setPaymentLoading(false);
+      }
+    } catch (error) {
+      console.error("Error during payment:", error);
+      setPaymentLoading(false);
+    }
   };
 
   return (
@@ -276,9 +309,9 @@ function Checkout() {
                       </ul>
                       <div className="d-grid">
                         <form
-                          action={`http://127.0.0.1:8000/api/v1/payment/stripe-checkout/${order.oid}/`}
                           className="w-100"
                           method="POST"
+                          onSubmit={payWithStripe}
                         >
                           {paymentLoading === true ? (
                             <button
@@ -293,7 +326,6 @@ function Checkout() {
                           ) : (
                             <button
                               type="submit"
-                              onClick={payWithStripe}
                               className="btn btn-lg btn-success mt-2 w-100"
                             >
                               {" "}
@@ -301,7 +333,7 @@ function Checkout() {
                             </button>
                           )}
                         </form>
-
+{/* 
                         <PayPalScriptProvider options={initialOptions}>
                           <PayPalButtons
                             className="mt-3"
@@ -332,7 +364,7 @@ function Checkout() {
                               });
                             }}
                           />
-                        </PayPalScriptProvider>
+                        </PayPalScriptProvider> */}
                       </div>
                       <p className="small mb-0 mt-2 text-center">
                         By proceeding to payment, you agree to these{" "}

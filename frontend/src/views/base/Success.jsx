@@ -55,15 +55,17 @@ function Success() {
                   <p>
                     {" "}
                     Hey there, you enrollment in the 2 courses where successful,
-                    visit your <a href="">My Courses</a> page, to view the
+                    visit your <a href="http://localhost:5173/student/courses">My Courses</a> page, to view the
                     courses now.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary mb-0 rounded-2"
-                  >
-                    View Enrolled Courses <i className="fas fa-arrow-right"></i>
-                  </button>
+                  <form action="http://localhost:5173/student/courses">
+                    <button
+                      type="submit"
+                      className="btn btn-primary mb-0 rounded-2"
+                    >
+                      View Enrolled Courses <i className="fas fa-arrow-right"></i>
+                    </button>
+                  </form>
                 </div>
                 <div className="col-lg-7 text-center">
                   <img
@@ -83,15 +85,18 @@ function Success() {
                   <p>
                     {" "}
                     Hey there, you enrollment in the 2 courses where successful,
-                    visit your <a href="">My Courses</a> page, to view the
+                    visit your <a href="http://localhost:5173/student/courses">My Courses</a> page, to view the
                     courses now.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary mb-0 rounded-2"
-                  >
-                    View Enrolled Courses <i className="fas fa-arrow-right"></i>
-                  </button>
+                  <form action="http://localhost:5173/student/courses">
+                    <button
+                      type="submit"
+                      className="btn btn-primary mb-0 rounded-2"
+                    >
+                      View Enrolled Courses <i className="fas fa-arrow-right"></i>
+                    </button>
+                  </form>
+
                 </div>
                 <div className="col-lg-7 text-center">
                   <img
@@ -137,12 +142,14 @@ function Success() {
                     Unfortunately, phew! Your payment did not go through. <br />{" "}
                     Please try again.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-danger mb-0 rounded-2"
-                  >
-                    Try again <i className="fas fa-repeat"></i>
-                  </button>
+                  <form action="http://localhost:5173">
+                    <button
+                      type="submit"
+                      className="btn btn-primary mb-0 rounded-2"
+                    >
+                      Home <i className="fas fa-arrow-right"></i>
+                    </button>
+                  </form>
                 </div>
                 <div className="col-lg-7 text-center">
                   <img

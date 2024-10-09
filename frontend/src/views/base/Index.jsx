@@ -102,31 +102,24 @@ function Index() {
   return (
     <>
       <BaseHeader />
-
+{/* 
       <section className="py-lg-8 py-5">
-        {/* container */}
         <div className="container my-lg-8">
-          {/* row */}
           <div className="row align-items-center">
-            {/* col */}
             <div className="col-lg-6 mb-6 mb-lg-0">
               <div>
-                {/* heading */}
                 <h5 className="text-dark mb-4">
                   <i className="fe fe-check icon-xxs icon-shape bg-light-success text-success rounded-circle me-2" />
                   Most trusted education platform
                 </h5>
-                {/* heading */}
                 <h1 className="display-3 fw-bold mb-3">
                   Grow your skills and advance career
                 </h1>
-                {/* para */}
                 <p className="pe-lg-10 mb-5">
                   Start, switch, or advance your career with more than 5,000
                   courses, Professional Certificates, and degrees from
                   world-class universities and companies.
-                </p>
-                {/* btn */}
+                </p> */}
                 {/* <a href="#" className="btn btn-primary fs-4 text-inherit ms-3">
                   Join Free Now <i className="fas fa-plus"></i>
                 </a> */}
@@ -136,11 +129,9 @@ function Index() {
                 >
                   Watch Demo <i className="fas fa-video"></i>
                 </a> */}
-              </div>
+              {/* </div>
             </div>
-            {/* col */}
             <div className="col-lg-6 d-flex justify-content-center">
-              {/* images */}
               <div className="position-relative">
                 <img
                   src="https://geeksui.codescandy.com/geeks/assets/images/background/acedamy-img/girl-image.png"
@@ -151,14 +142,12 @@ function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="pb-8">
+      {/* <section className="pb-8">
         <div className="container mb-lg-8">
-          {/* row */}
           <div className="row mb-5">
             <div className="col-md-6 col-lg-3 border-top-md border-top pb-4  border-end-md">
-              {/* text */}
               <div className="py-7 text-center">
                 <div className="mb-3">
                   <i className="fe fe-award fs-2 text-info" />
@@ -170,12 +159,10 @@ function Index() {
               </div>
             </div>
             <div className="col-md-6 col-lg-3 border-top-md border-top border-end-lg">
-              {/* icon */}
               <div className="py-7 text-center">
                 <div className="mb-3">
                   <i className="fe fe-users fs-2 text-warning" />
                 </div>
-                {/* text */}
                 <div className="lh-1">
                   <h2 className="mb-1">1.8 Billion+</h2>
                   <span>Course enrolments</span>
@@ -183,12 +170,10 @@ function Index() {
               </div>
             </div>
             <div className="col-md-6 col-lg-3 border-top-lg border-top border-end-md">
-              {/* icon */}
               <div className="py-7 text-center">
                 <div className="mb-3">
                   <i className="fe fe-tv fs-2 text-primary" />
                 </div>
-                {/* text */}
                 <div className="lh-1">
                   <h2 className="mb-1">41,000+</h2>
                   <span>Courses in 42 languages</span>
@@ -196,12 +181,10 @@ function Index() {
               </div>
             </div>
             <div className="col-md-6 col-lg-3 border-top-lg border-top">
-              {/* icon */}
               <div className="py-7 text-center">
                 <div className="mb-3">
                   <i className="fe fe-film fs-2 text-success" />
                 </div>
-                {/* text */}
                 <div className="lh-1">
                   <h2 className="mb-1">179,000+</h2>
                   <span>Online Videos</span>
@@ -210,7 +193,100 @@ function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+<section className="py-lg-8 py-5 bg-light">
+  {/* container */}
+  <div className="container my-lg-8">
+    {/* row */}
+    <div className="row align-items-center">
+      {/* col */}
+      <div className="col-lg-6 mb-6 mb-lg-0">
+        <div>
+          {/* heading */}
+          <h5 className="text-success mb-4" style={{ fontWeight: "600", letterSpacing: "1px" }}>
+            <i className="fe fe-check icon-xxs icon-shape bg-light text-success rounded-circle me-2" />
+            Most Trusted Education Platform
+          </h5>
+
+          {/* main heading */}
+          <h1 className="display-3 fw-bold mb-3" style={{ color: "#333", fontSize: "2.5rem" }}>
+            Grow Your Skills and Advance Your Career
+          </h1>
+
+          {/* paragraph */}
+          <p className="pe-lg-10 mb-5" style={{ color: "#555", fontSize: "1.1rem", lineHeight: "1.6" }}>
+            Start, switch, or advance your career with more than 5,000 courses, Professional Certificates, and degrees
+            from world-class universities and companies.
+          </p>
+
+          {/* Buttons with hover effect */}
+          <div>
+            <a
+              href="#"
+              className="btn btn-primary fs-4 text-inherit me-3"
+              style={{
+                transition: "background-color 0.3s ease, transform 0.3s ease",
+                padding: "12px 24px",
+                borderRadius: "25px",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.05)";
+                e.target.style.backgroundColor = "#0056b3"; // Darker shade on hover
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.backgroundColor = ""; // Reset to original
+              }}
+            >
+              Join Free Now <i className="fas fa-plus"></i>
+            </a>
+            <a
+              href="https://www.youtube.com/watch?v=Nfzi7034Kbg"
+              className="btn btn-outline-success fs-4 text-inherit"
+              style={{
+                transition: "color 0.3s ease, transform 0.3s ease",
+                padding: "12px 24px",
+                borderRadius: "25px",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.05)";
+                e.target.style.color = "#ffffff"; // Change text color on hover
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.color = ""; // Reset to original
+              }}
+            >
+              Watch Demo <i className="fas fa-video"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* col */}
+      <div className="col-lg-6 d-flex justify-content-center">
+        {/* Image with hover effect */}
+        <div className="position-relative">
+          <img
+            src="https://images.playground.com/7ba74c1671a44af9be88a83cfa81fe85.jpeg"
+            alt="girl"
+            className="img-fluid"
+            style={{
+              borderRadius: "15px",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+              transition: "transform 0.3s ease",
+              width:"500px"
+            }}
+            onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
+            onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <section className="mb-5">
         <div className="container mb-lg-8 ">
@@ -221,7 +297,7 @@ function Index() {
                 <h2 className="mb-1 h1">🔥Most Popular Courses</h2>
                 <p>
                   These are the most popular courses among Geeks Courses
-                  learners worldwide in year 2022
+                  learners worldwide in year 2024
                 </p>
               </div>
             </div>
@@ -273,7 +349,7 @@ function Index() {
                           {c.students?.length > 1 && "s"}
                         </small>{" "}
                         <br />
-                        <div className="lh-1 mt-3 d-flex">
+                        {/* <div className="lh-1 mt-3 d-flex">
                           <span className="align-text-top">
                             <span className="fs-6">
                               <Rater total={5} rating={c.average_rating || 0} />
@@ -283,7 +359,7 @@ function Index() {
                           <span className="fs-6 ms-2">
                             ({c.reviews?.length} Reviews)
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                       {/* Card Footer */}
                       <div className="card-footer">
@@ -307,13 +383,13 @@ function Index() {
                             >
                               <i className="fas fa-shopping-cart text-primary text-white" />
                             </button>
-                            <Link
+                            {/* <Link
                               to={""}
                               className="text-inherit text-decoration-none btn btn-primary"
                             >
                               Enroll Now{" "}
                               <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
-                            </Link>
+                            </Link> */}
                           </div>
                         </div>
                       </div>
@@ -370,15 +446,11 @@ function Index() {
         </div>
       </section>
 
-      <section className="my-8 py-lg-8">
-        {/* container */}
+      {/* <section className="my-8 py-lg-8">
         <div className="container">
-          {/* row */}
           <div className="row align-items-center bg-primary gx-0 rounded-3 mt-5">
-            {/* col */}
             <div className="col-lg-6 col-12 d-none d-lg-block">
               <div className="d-flex justify-content-center pt-4">
-                {/* img */}
                 <div className="position-relative">
                   <img
                     src="https://geeksui.codescandy.com/geeks/assets/images/png/cta-instructor-1.png"
@@ -391,7 +463,6 @@ function Index() {
                       alt="dollor"
                     />
                   </div>
-                  {/* img */}
                   <div className="me-n4 position-absolute top-0 end-0">
                     <img
                       src="https://geeksui.codescandy.com/geeks/assets/images/svg/graph.svg"
@@ -403,7 +474,6 @@ function Index() {
             </div>
             <div className="col-lg-5 col-12">
               <div className="text-white p-5 p-lg-0">
-                {/* text */}
                 <h2 className="h1 text-white">Become an instructor today</h2>
                 <p className="mb-0">
                   Instructors from around the world teach millions of students
@@ -417,17 +487,14 @@ function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="bg-gray-200 pt-8 pb-8 mt-5">
         <div className="container pb-8">
-          {/* row */}
-          <div className="row mb-lg-8 mb-5">
+          {/* <div className="row mb-lg-8 mb-5">
             <div className="offset-lg-1 col-lg-10 col-12">
               <div className="row align-items-center">
-                {/* col */}
                 <div className="col-lg-6 col-md-8">
-                  {/* rating */}
                   <div>
                     <div className="mb-3">
                       <span className="lh-1">
@@ -442,7 +509,6 @@ function Index() {
                       </span>
                       <span className="ms-2">(Based on 3265 ratings)</span>
                     </div>
-                    {/* heading */}
                     <h2 className="h1">What our students say</h2>
                     <p className="mb-0">
                       Hear from
@@ -455,23 +521,18 @@ function Index() {
                   </div>
                 </div>
                 <div className="col-lg-6 col-md-4 text-md-end mt-4 mt-md-0">
-                  {/* btn */}
-                  {/* <a href="#" className="btn btn-primary">
+                 <a href="#" className="btn btn-primary">
                     View Reviews
-                  </a> */}
+                  </a> 
                 </div>
               </div>
             </div>
-          </div>
-          {/* row */}
+          </div> */}
           <div className="row">
-            {/* col */}
             <div className="col-md-12">
               <div className="position-relative">
-                {/* controls */}
-                {/* slider */}
+
                 <div className="sliderTestimonial">
-                  {/* item */}
                   <div className="row">
                     <div className="col-lg-4">
                       <div className="item">
@@ -543,7 +604,7 @@ function Index() {
                                   <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                                 </svg>
                               </span>
-                              <span className="text-warning">5</span>
+                              <span className="text-warning"></span>
                               {/* text */}
                             </div>
                             <h3 className="mb-0 h4">Gladys Colbert</h3>
@@ -622,7 +683,7 @@ function Index() {
                                   <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                                 </svg>
                               </span>
-                              <span className="text-warning">5</span>
+                              <span className="text-warning"></span>
                               {/* text */}
                             </div>
                             <h3 className="mb-0 h4">Gladys Colbert</h3>
@@ -701,7 +762,6 @@ function Index() {
                                   <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                                 </svg>
                               </span>
-                              <span className="text-warning">5</span>
                               {/* text */}
                             </div>
                             <h3 className="mb-0 h4">Gladys Colbert</h3>

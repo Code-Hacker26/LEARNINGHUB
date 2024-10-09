@@ -58,12 +58,12 @@ function Sidebar() {
                                     <i className="fas fa-edit"></i> Edit Profile
                                 </Link>
                             </li>
-                            <li className="nav-item ">
+                            {/* <li className="nav-item ">
                                 <Link className="nav-link" to={`/student/change-password/`}>
                                     {" "}
                                     <i className="fas fa-lock"></i> Change Password
                                 </Link>
-                            </li>
+                            </li> */}
                             <li className="nav-item">
                                 <Link className="nav-link" to={`/login/`}>
                                     {" "}

@@ -2,13 +2,14 @@ import React from 'react'
 
 function BaseFooter() {
   return (
-    <footer className="pt-lg-8 pt-5 footer bg-dark text-white mt-5">
+    <footer className="pt-lg-8 pt-5 footer text-white mt-5" style={{  backgroundColor: "#3b82f6" /* Slightly lighter than Bootstrap's primary color */
+    }}>
       <div className="container mt-lg-2">
         <div className="row">
           <div className="col-lg-4 col-md-6 col-12 text-white">
             {/* about company */}
             <div className="mb-4">
-              <h1>Learing hub</h1>
+              <h1>EduSpehre</h1>
               <div className="mt-4">
                 <p>
                 Empowering learners with interactive courses and resources, our online platform makes learning accessible, flexible, and engaging from anywhere.

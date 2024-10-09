@@ -15,7 +15,7 @@ function Earning() {
     useAxios()
       .get(`teacher/summary/${UserData()?.user_id}/`)
       .then((res) => {
-        setStats(res.data[0]);
+        setStats(res.data);
       });
 
     useAxios()

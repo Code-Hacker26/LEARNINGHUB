@@ -85,8 +85,8 @@ function Courses() {
                                                 <th>Courses</th>
                                                 <th>Date Enrolled</th>
                                                 <th>Lectures</th>
-                                                <th>Completed</th>
-                                                <th>Action</th>
+                                                <th>Completed</th> 
+                                                 <th>Action</th>
                                                 <th />
                                             </tr>
                                         </thead>
@@ -125,7 +125,7 @@ function Courses() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td><p className='mt-3'>{moment(c.date).format("DDD MM, YYYY")}</p></td>
+                                                <td><p className='mt-3'>{moment(c.date).format("DD MM, YYYY")}</p></td>
                                                 <td><p className='mt-3'>{c.lectures?.length}</p></td>
                                                 <td><p className='mt-3'>{c.completed_lessons?.length}</p></td>
                                                 <td>
@@ -137,7 +137,7 @@ function Courses() {
                                     {c.completed_lesson?.length > 0 && (
                                 <button className='btn btn-primary btn-sm mt-3'>Continue Course<i className='fas fa-arrow-right ms-2'></i></button>
                               )}
-                                                </td>
+                                                </td> 
                                             </tr>
                                         
                                             ))}

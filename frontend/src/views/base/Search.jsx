@@ -161,17 +161,7 @@ function Search() {
                           {c.students?.length > 1 && "s"}
                         </small>{" "}
                         <br />
-                        <div className="lh-1 mt-3 d-flex">
-                          <span className="align-text-top">
-                            <span className="fs-6">
-                              <Rater total={5} rating={c.average_rating || 0} />
-                            </span>
-                          </span>
-                          <span className="text-warning">4.5</span>
-                          <span className="fs-6 ms-2">
-                            ({c.reviews?.length} Reviews)
-                          </span>
-                        </div>
+                        
                       </div>
                       {/* Card Footer */}
                       <div className="card-footer">
@@ -195,13 +185,7 @@ function Search() {
                             >
                               <i className="fas fa-shopping-cart text-primary text-white" />
                             </button>
-                            <Link
-                              to={""}
-                              className="text-inherit text-decoration-none btn btn-primary"
-                            >
-                              Enroll Now{" "}
-                              <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
-                            </Link>
+                            
                           </div>
                         </div>
                       </div>

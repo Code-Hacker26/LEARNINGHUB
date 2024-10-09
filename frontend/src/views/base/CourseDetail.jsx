@@ -28,7 +28,7 @@ function CourseDetail() {
   const userId = UserData().user_id;
 
   const fetchCourse = () => {
-  
+
     useAxios()
       .get(`course/course-detail/${param.slug}/`)
       .then((res) => {
@@ -1471,7 +1471,7 @@ function CourseDetail() {
                       <div className="col">
                         {/* Card */}
                         <div className="card card-hover">
-                          <Link to={`/course-detail/slug/`}>
+                          <Link to={`/course-detail//${param.slug}/`}>
                             <img
                               src="https://geeksui.codescandy.com/geeks/assets/images/course/course-css.jpg"
                               alt="course"
@@ -1490,7 +1490,7 @@ function CourseDetail() {
                             </div>
                             <h4 className="mb-2 text-truncate-line-2 ">
                               <Link
-                                to={`/course-detail/slug/`}
+                                to={`/slug/`}
                                 className="text-inherit text-decoration-none text-dark fs-5"
                               >
                                 How to easily create a website with JavaScript
@@ -1535,7 +1535,7 @@ function CourseDetail() {
                       <div className="col">
                         {/* Card */}
                         <div className="card card-hover">
-                          <Link to={`/course-detail/slug/`}>
+                          <Link to={`/course-detail//${param.slug}/`}>
                             <img
                               src="https://geeksui.codescandy.com/geeks/assets/images/course/course-angular.jpg"
                               alt="course"
@@ -1554,7 +1554,7 @@ function CourseDetail() {
                             </div>
                             <h4 className="mb-2 text-truncate-line-2 ">
                               <Link
-                                to={`/course-detail/slug/`}
+                                to={`/course-detail//${param.slug}/`}
                                 className="text-inherit text-decoration-none text-dark fs-5"
                               >
                                 How to easily create a website with JavaScript
@@ -1599,7 +1599,7 @@ function CourseDetail() {
                       <div className="col">
                         {/* Card */}
                         <div className="card card-hover">
-                          <Link to={`/course-detail/slug/`}>
+                          <Link to={`/course-detail//${param.slug}/`}>
                             <img
                               src="https://geeksui.codescandy.com/geeks/assets/images/course/course-react.jpg"
                               alt="course"
@@ -1618,7 +1618,7 @@ function CourseDetail() {
                             </div>
                             <h4 className="mb-2 text-truncate-line-2 ">
                               <Link
-                                to={`/course-detail/slug/`}
+                                to={`/course-detail//${param.slug}/`}
                                 className="text-inherit text-decoration-none text-dark fs-5"
                               >
                                 Learn React.Js for Beginners from Start to
@@ -1664,7 +1664,7 @@ function CourseDetail() {
                       <div className="col">
                         {/* Card */}
                         <div className="card card-hover">
-                          <Link to={`/course-detail/slug/`}>
+                          <Link to={`/course-detail//${param.slug}/`}>
                             <img
                               src="https://geeksui.codescandy.com/geeks/assets/images/course/course-python.jpg"
                               alt="course"
@@ -1683,7 +1683,7 @@ function CourseDetail() {
                             </div>
                             <h4 className="mb-2 text-truncate-line-2 ">
                               <Link
-                                to={`/course-detail/slug/`}
+                                to={`/course-detail//${param.slug}/`}
                                 className="text-inherit text-decoration-none text-dark fs-5"
                               >
                                 How to easily create a website with JavaScript

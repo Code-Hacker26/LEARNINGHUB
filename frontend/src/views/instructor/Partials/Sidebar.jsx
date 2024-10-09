@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 function Sidebar() {
     return (
-        <div className="col-lg-3 col-md-4 col-12">
+        <div className="col-lg-3 col-md-4 col-12 ">
             <nav className="navbar navbar-expand-md shadow-sm mb-4 mb-lg-0 sidenav">
                 <a className="d-xl-none d-lg-none d-md-none text-inherit fw-bold text-decoration-none text-dark p-3" href="#">Menu</a>
                 <button className="navbar-toggler d-md-none icon-shape icon-sm rounded bg-primary text-light m-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidenav" aria-controls="sidenav" aria-expanded="false" aria-label="Toggle navigation" >
@@ -21,31 +21,31 @@ function Sidebar() {
                             <li className="nav-item">
                                 <Link className="nav-link " to={`/instructor/create-course/`}> <i className='fas fa-plus me-2'></i>Create Course</Link>
                             </li>
-                            <li className="nav-item">
+                              <li className="nav-item">
                                 <Link className="nav-link " to={`/instructor/reviews/`}> <i className='fas fa-star me-2'></i>Review</Link>
-                            </li>
+                            </li> 
                             <li className="nav-item">
                                 <Link className="nav-link " to={`/instructor/students/`}> <i className='fas fa-graduation-cap me-2'></i>Students</Link>
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link " to={`/instructor/earning/`}> <i className='fas fa-dollar-sign me-2'></i>Earning</Link>
-                            </li>
+                            </li> 
                             <li className="nav-item">
                             <Link className="nav-link " to={`/instructor/coupon/`}>
                               {" "}
                               <i className="fas fa-tag me-2"></i>Coupons
                             </Link>
                             </li>
-                            {/* <li className="nav-item">
+                             <li className="nav-item">
                               <Link className="nav-link " to={`/instructor/notifications/`}>
                                 {" "}
                                 <i className="fas fa-bell me-2"></i>Notifications
                               </Link>
-                              </li> */}
+                              </li> 
                            
-                            {/* <li className="nav-item">
+                         <li className="nav-item">
                                 <Link className="nav-link" to={`/instructor/orders/`}>  <i className='fas fa-shopping-cart me-2'></i> Orders </Link>
-                            </li> */}
+                            </li> 
                            
                         </ul>
 
@@ -55,9 +55,9 @@ function Sidebar() {
                             <li className="nav-item">
                                 <Link className="nav-link" to={`/instructor/profile/`}> <i className='fas fa-edit'></i> Edit Profile</Link>
                             </li>
-                            <li className="nav-item ">
+                         <li className="nav-item ">
                                 <Link className="nav-link" to={`/instructor/change-password/`}> <i className='fas fa-lock'></i> Change Password</Link>
-                            </li>
+                            </li> 
                             <li className="nav-item">
                                 <Link className="nav-link" to={`/login/`}> <i className='fas fa-sign-out-alt'></i> Sign Out</Link>
                             </li>

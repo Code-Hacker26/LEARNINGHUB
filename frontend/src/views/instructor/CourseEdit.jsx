@@ -12,6 +12,7 @@ import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 import Swal from "sweetalert2";
 import Toast from "../plugin/Toast";
+import { forEachChild } from "typescript";
 
 function CourseEdit() {
   const [course, setCourse] = useState({
@@ -142,7 +143,7 @@ function CourseEdit() {
 
     useAxios()
       .delete(
-        `teacher/course/variant-delete/${variantId}/1/${param.course_id}/`
+        `teacher/course/variant-delete/${variantId}/${UserData()?.user_id}/${param.course_id}/`
       )
       .then((res) => {
         console.log(res.data);
@@ -173,7 +174,7 @@ function CourseEdit() {
 
     useAxios()
       .delete(
-        `teacher/course/variant-item-delete/${variantId}/${itemId}/1/${param.course_id}/`
+        `teacher/course/variant-item-delete/${variantId}/${itemId}/${UserData()?.user_id}/${param.course_id}/`
       )
       .then((res) => {
         console.log(res.data);
@@ -187,53 +188,55 @@ function CourseEdit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const formdata = new FormData();
+
+    // Check if file is a valid File object and append
+    if (course.file instanceof File) {
+        formdata.append("file", course.file);
+    } else {
+        console.error("Invalid file object:", course.file);
+    }
+
+    // Append other fields
     formdata.append("title", course.title);
     formdata.append("description", ckEdtitorData);
-    formdata.append("category", course.category);
+
+    // Ensure category ID is passed as a number
+    if (course.category && typeof course.category.id === 'number') {
+        formdata.append("category", course.category.id);
+    }
+
     formdata.append("price", course.price);
     formdata.append("level", course.level);
     formdata.append("language", course.language);
-    formdata.append("teacher", 1);
-    console.log(course.category);
+    formdata.append("teacher", 1); // Replace with actual teacher ID
 
-    if (course.file !== null || course.file !== "") {
-      formdata.append("file", course.file || "");
-    }
-
-    if (course.image.file) {
-      formdata.append("image", course.image.file);
-    }
-
-    variants.forEach((variant, variantIndex) => {
-      Object.entries(variant).forEach(([key, value]) => {
-        console.log(`Key: ${key} = value: ${value}`);
-        formdata.append(
-          `variants[${variantIndex}][variant_${key}]`,
-          String(value)
+    try {
+        const response = await useAxios().patch(
+            `teacher/course-update/${UserData()?.user_id}/${param.course_id}/`,
+            formdata,
+            {
+                headers: {
+                    // No need to set Content-Type, Axios will handle it
+                },
+            }
         );
-      });
-
-      variant.items.forEach((item, itemIndex) => {
-        Object.entries(item).forEach(([itemKey, itemValue]) => {
-          formdata.append(
-            `variants[${variantIndex}][items][${itemIndex}][${itemKey}]`,
-            itemValue
-          );
+        console.log(response.data);
+        Swal.fire({
+            icon: "success",
+            title: "Course Updated Successfully",
         });
-      });
-    });
+    } catch (error) {
+        console.error("Error updating course:", error.response ? error.response.data : error);
+        Swal.fire({
+            icon: "error",
+            title: "Update Failed",
+            text: error.response ? error.response.data.message : "An error occurred.",
+        });
+    }
+};
 
-    const response = await useAxios().patch(
-      `teacher/course-update/1/${param.course_id}/`,
-      formdata
-    );
-    console.log(response.data);
-    Swal.fire({
-      icon: "success",
-      title: "Course Updated Successfully",
-    });
-  };
   return (
     <>
       <BaseHeader />

@@ -34,7 +34,7 @@ function Coupon() {
 
   const fetchCoupons = () => {
     useAxios()
-      .get(`teacher/coupon-list/1/`)
+      .get(`teacher/coupon-list/${UserData()?.user_id}/`)
       .then((res) => {
         console.log(res.data);
         setCoupons(res.data);
@@ -62,7 +62,7 @@ function Coupon() {
     formdata.append("discount", createCoupon.discount);
 
     useAxios()
-      .post(`teacher/coupon-list/1/`, formdata)
+      .post(`teacher/coupon-list/${UserData()?.user_id}/`, formdata)
       .then((res) => {
         console.log(res.data);
         fetchCoupons();
@@ -76,7 +76,7 @@ function Coupon() {
 
   const handleDeleteCoupon = (couponId) => {
     useAxios()
-      .delete(`teacher/coupon-detail/1/${couponId}/`)
+      .delete(`teacher/coupon-detail/${UserData()?.user_id}/${couponId}/`)
       .then((res) => {
         console.log(res.data);
         fetchCoupons();
@@ -98,7 +98,7 @@ function Coupon() {
 
     useAxios()
       .patch(
-        `teacher/coupon-detail/1/${selectedCoupon.id}/`,
+        `teacher/coupon-detail/${UserData()?.user_id}/${selectedCoupon.id}/`,
         formdata
       )
       .then((res) => {

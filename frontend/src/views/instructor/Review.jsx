@@ -19,7 +19,7 @@ function Review() {
   const [filteredReviews, setFilteredReview] = useState([]);
   const fetchReviewsData = () => {
     useAxios()
-    .get(`teacher/review-lists/1/`)
+    .get(`teacher/review-lists/${UserData()?.user_id}/`)
     .then((res) => {
       console.log(res.data);
       setReviews(res.data);
@@ -38,7 +38,7 @@ console.log("errorrrrrrrrrrr",err)
   const handleSubmitReply = async (reviewId) => {
     try {
       await useAxios()
-        .patch(`teacher/review-detail/1/${reviewId}/`, {
+        .patch(`teacher/review-detail/${UserData()?.user_id}/${reviewId}/`, {
           reply: reply,
         })
         .then((res) => {

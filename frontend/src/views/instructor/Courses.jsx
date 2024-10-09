@@ -15,7 +15,7 @@ function Courses() {
 
     const fetchCourseData = () => {
       useAxios()
-        .get(`teacher/course-lists/1/`)
+        .get(`teacher/course-lists/${UserData()?.user_id}/`)
         .then((res) => {
           console.log(res.data);
           setCourses(res.data);
@@ -90,7 +90,7 @@ function Courses() {
                         <th>Level</th>
                         <th>Status</th>
                         <th>Date Created</th>
-                        <th>Action</th>
+                        <th>Edit</th>
                         <th />
                       </tr>
                     </thead>
@@ -165,12 +165,12 @@ function Courses() {
         >
           <i className="fas fa-edit"></i>
         </Link>
-        <button className="btn btn-danger btn-sm mt-3 me-1">
+         <button className="btn btn-danger btn-sm mt-3 me-1">
           <i className="fas fa-trash"></i>
         </button>
         <button className="btn btn-secondary btn-sm mt-3 me-1">
           <i className="fas fa-eye"></i>
-        </button>
+        </button> 
       </td>
     </tr>
   ))}

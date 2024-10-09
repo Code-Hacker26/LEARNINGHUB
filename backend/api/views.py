@@ -820,13 +820,59 @@ class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
 
 
 
+# class TeacherSummaryAPIView(generics.ListAPIView):
+#     serializer_class = api_serializer.TeacherSummarySerializer
+#     permission_classes = [AllowAny]
+
+#     def get_queryset(self):
+#         teacher_id = self.kwargs['teacher_id']
+#         teacher = api_models.Teacher.objects.get(id=teacher_id)
+
+#         one_month_ago = datetime.today() - timedelta(days=28)
+
+#         total_courses = api_models.Course.objects.filter(teacher=teacher).count()
+#         total_revenue = api_models.CartOrderItem.objects.filter(teacher=teacher, order__payment_status="Paid").aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
+#         monthly_revenue = api_models.CartOrderItem.objects.filter(teacher=teacher, order__payment_status="Paid", date__gte=one_month_ago).aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
+
+#         enrolled_courses = api_models.EnrolledCourse.objects.filter(teacher=teacher)
+#         unique_student_ids = set()
+#         students = []
+
+#         for course in enrolled_courses:
+#             if course.user_id not in unique_student_ids:
+#                 user = User.objects.get(id=course.user_id)
+#                 student = {
+#                     "full_name": user.profile.full_name,
+#                     "image": user.profile.image.url,
+#                     "country": user.profile.country,
+#                     "date": course.date
+#                 }
+
+#                 students.append(student)
+#                 unique_student_ids.add(course.user_id)
+
+#         return [{
+#             "total_courses": total_courses,
+#             "total_revenue": total_revenue,
+#             "monthly_revenue": monthly_revenue,
+#             "total_students": len(students),
+#         }]
+    
+#     def list(self, request, *args, **kwargs):
+#         queryset = self.get_queryset()
+#         serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+    
 class TeacherSummaryAPIView(generics.ListAPIView):
-    serializer_class = api_serializer.TeacherSummarySerializer
     permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+    def get(self, request, *args, **kwargs):
+        try:
+            teacher_id = self.kwargs['teacher_id']
+            user = api_models.User.objects.get(id=teacher_id)
+            teacher = api_models.Teacher.objects.get(user__email=user.email)
+        except api_models.Teacher.DoesNotExist:
+            return Response({"detail": "Teacher not found."}, status=404)
 
         one_month_ago = datetime.today() - timedelta(days=28)
 
@@ -840,29 +886,29 @@ class TeacherSummaryAPIView(generics.ListAPIView):
 
         for course in enrolled_courses:
             if course.user_id not in unique_student_ids:
-                user = User.objects.get(id=course.user_id)
-                student = {
-                    "full_name": user.profile.full_name,
-                    "image": user.profile.image.url,
-                    "country": user.profile.country,
-                    "date": course.date
-                }
+                try:
+                    user = User.objects.get(id=course.user_id)
+                    student = {
+                       "full_name": user.full_name,  # If there’s no profile, use user directly
+                       "image": user.image.url if hasattr(user, 'image') else None,  # Adjust according to your user model
+                    #    "country": user.country | "india",  # Adjust accordingly
+                       "date": course.date
+                    }
+                    students.append(student)
+                    unique_student_ids.add(course.user_id)
+                except User.DoesNotExist:
+                    # Skip the course if the user does not exist
+                    continue
 
-                students.append(student)
-                unique_student_ids.add(course.user_id)
-
-        return [{
+        response_data = {
             "total_courses": total_courses,
             "total_revenue": total_revenue,
             "monthly_revenue": monthly_revenue,
             "total_students": len(students),
-        }]
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
+        }
+
+        return Response(response_data, status=200)  # Make sure to include a status code
+
 
 class TeacherCourseListAPIView(generics.ListAPIView):
     serializer_class = api_serializer.CourseSerializer
@@ -870,7 +916,12 @@ class TeacherCourseListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+
+        user = api_models.User.objects.get(id=teacher_id)
+        print(teacher_id)
+# Use the email from the User to get the corresponding Teacher
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Course.objects.filter(teacher=teacher)
     
 
@@ -880,7 +931,8 @@ class TeacherReviewListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
         return api_models.Review.objects.filter(course__teacher=teacher)
     
 
@@ -891,14 +943,19 @@ class TeacherReviewDetailAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         teacher_id = self.kwargs['teacher_id']
         review_id = self.kwargs['review_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Review.objects.get(course__teacher=teacher, id=review_id)
     
 
 class TeacherStudentsListAPIVIew(viewsets.ViewSet):
     
     def list(self, request, teacher_id=None):
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        teacher_id = self.kwargs['teacher_id']
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
 
         enrolled_courses = api_models.EnrolledCourse.objects.filter(teacher=teacher)
         unique_student_ids = set()
@@ -906,11 +963,11 @@ class TeacherStudentsListAPIVIew(viewsets.ViewSet):
 
         for course in enrolled_courses:
             if course.user_id not in unique_student_ids:
-                user = User.objects.get(id=course.user_id)
+                user = api_models.User.objects.get(id=course.user_id)
                 student = {
                     "full_name": user.profile.full_name,
                     "image": user.profile.image.url,
-                    "country": user.profile.country,
+                    # "country": user.profile.country,
                     "date": course.date
                 }
 
@@ -922,7 +979,9 @@ class TeacherStudentsListAPIVIew(viewsets.ViewSet):
 
 @api_view(("GET", ))
 def TeacherAllMonthEarningAPIView(request, teacher_id):
-    teacher = api_models.Teacher.objects.get(id=teacher_id)
+    user = api_models.User.objects.get(id=teacher_id)
+    teacher = api_models.Teacher.objects.get(user__email=user.email)
+    # teacher = api_models.Teacher.objects.get(id=teacher_id)
     monthly_earning_tracker = (
         api_models.CartOrderItem.objects
         .filter(teacher=teacher, order__payment_status="Paid")
@@ -941,7 +1000,9 @@ def TeacherAllMonthEarningAPIView(request, teacher_id):
 class TeacherBestSellingCourseAPIView(viewsets.ViewSet):
 
     def list(self, request, teacher_id=None):
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         courses_with_total_price = []
         courses = api_models.Course.objects.filter(teacher=teacher)
 
@@ -963,9 +1024,12 @@ class TeacherCourseOrdersListAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        # teacher_id = self.kwargs['teacher_id']
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
 
+        teacher_id = self.kwargs['teacher_id']
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
         return api_models.CartOrderItem.objects.filter(teacher=teacher)
 
 class TeacherQuestionAnswerListAPIView(generics.ListAPIView):
@@ -973,8 +1037,11 @@ class TeacherQuestionAnswerListAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+        # teacher_id = self.kwargs['teacher_id']
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
         return api_models.Question_Answer.objects.filter(course__teacher=teacher)
     
 class TeacherCouponListCreateAPIView(generics.ListCreateAPIView):
@@ -983,7 +1050,9 @@ class TeacherCouponListCreateAPIView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Coupon.objects.filter(teacher=teacher)
     
 class TeacherCouponDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -993,7 +1062,10 @@ class TeacherCouponDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         teacher_id = self.kwargs['teacher_id']
         coupon_id = self.kwargs['coupon_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        teacher_id = self.kwargs['teacher_id']
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Coupon.objects.get(teacher=teacher, id=coupon_id)
     
 class TeacherNotificationListAPIView(generics.ListAPIView):
@@ -1002,7 +1074,10 @@ class TeacherNotificationListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        teacher_id = self.kwargs['teacher_id']
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Notification.objects.filter(teacher=teacher, seen=False)
     
 class TeacherNotificationDetailAPIView(generics.RetrieveUpdateAPIView):
@@ -1012,7 +1087,10 @@ class TeacherNotificationDetailAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         teacher_id = self.kwargs['teacher_id']
         noti_id = self.kwargs['noti_id']
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        teacher_id = self.kwargs['teacher_id']
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Notification.objects.get(teacher=teacher, id=noti_id)
     
 class CourseCreateAPIView(generics.CreateAPIView):
@@ -1079,8 +1157,9 @@ class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         teacher_id = self.kwargs['teacher_id']
         course_id = self.kwargs['course_id']
-
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         course = api_models.Course.objects.get(course_id=course_id)
 
         return course
@@ -1090,6 +1169,9 @@ class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(course, data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         if "image" in request.data and isinstance(request.data['image'], InMemoryUploadedFile):
             course.image = request.data['image']
         elif 'image' in request.data and str(request.data['image']) == "No File":
@@ -1098,7 +1180,7 @@ class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
         if 'file' in request.data and not str(request.data['file']).startswith("http://"):
             course.file = request.data['file']
 
-        if 'category' in request.data['category'] and request.data['category'] != 'NaN' and request.data['category'] != "undefined":
+        if 'category' in request.data and request.data['category'] != 'NaN' and request.data['category'] != "undefined":
             category = api_models.Category.objects.get(id=request.data['category'])
             course.category = category
 
@@ -1213,8 +1295,8 @@ class TeacherCourseDetailAPIView(generics.RetrieveDestroyAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        course_id = self.kwargs['course_id']
-        return api_models.Course.objects.get(course_id=course_id)
+        slug = self.kwargs['course_id']
+        return api_models.Course.objects.get(slug=slug)
 
 class CourseDetailAPIView(generics.RetrieveAPIView):
     serializer_class = api_serializer.CourseSerializer
@@ -1222,8 +1304,8 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
     # queryset = api_models.Course.objects.filter(platform_status="Published", teacher_course_status="Published")
 
     def get_object(self):
-        course_id=self.kwargs['course_id']
-        return api_models.Course.objects.get(course_id=course_id)
+        slug=self.kwargs['slug']
+        return api_models.Course.objects.get(slug=slug)
         # slug = self.kwargs['slug']
         # course = api_models.Course.objects.get(slug=slug, platform_status="Published", teacher_course_status="Published")
         # return course
@@ -1240,7 +1322,9 @@ class CourseVariantDeleteAPIView(generics.DestroyAPIView):
 
         print("variant_id ========", variant_id)
 
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         course = api_models.Course.objects.get(teacher=teacher, course_id=course_id)
         return api_models.Variant.objects.get(variant_id=variant_id)
     
@@ -1254,8 +1338,9 @@ class CourseVariantItemDeleteAPIVIew(generics.DestroyAPIView):
         teacher_id = self.kwargs['teacher_id']
         course_id = self.kwargs['course_id']
 
-
-        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        user = api_models.User.objects.get(id=teacher_id)
+        teacher = api_models.Teacher.objects.get(user__email=user.email)
+        # teacher = api_models.Teacher.objects.get(id=teacher_id)
         course = api_models.Course.objects.get(teacher=teacher, course_id=course_id)
         variant = api_models.Variant.objects.get(variant_id=variant_id, course=course)
         return api_models.VariantItem.objects.get(variant=variant, variant_item_id=variant_item_id)

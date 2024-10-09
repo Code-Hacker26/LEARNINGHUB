@@ -190,23 +190,23 @@ JAZZMIN_SETTINGS = {
     # set using https://django-jazzmin.readthedocs.io/configuration/
     "show_ui_builder":True,
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Virtual Learning Hub admin",
+    "site_title": "EduSpehere admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Virtual Learning Hub",
+    "site_header": "EduSpehere",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Virtual Learning Hub",
+    "site_brand": "EduSphere",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
    
-    "site_logo":'admin_logo.png',
+    "site_logo":'logo.png',
 
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to the VLH",
+    "welcome_sign": "Welcome to EduSphere",
 
     # Copyright on the footer
-    "copyright": "Virtual lerner's Ltd",
+    "copyright": "EduSpehere's Ltd",
 
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",

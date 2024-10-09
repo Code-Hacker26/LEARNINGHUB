@@ -8,6 +8,7 @@ import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   const [stats, setStats] = useState([]);
@@ -15,14 +16,14 @@ function Dashboard() {
 
   const fetchCourseData = () => {
     useAxios()
-      .get(`teacher/summary/1/`)
+      .get(`teacher/summary/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data[0]);
-        setStats(res.data[0]);
+        console.log(res.data);
+        setStats(res.data);
       });
 
     useAxios()
-      .get(`teacher/course-lists/1/`)
+      .get(`teacher/course-lists/${UserData()?.user_id}/`)
       .then((res) => {
         console.log(res.data);
         setCourses(res.data);
@@ -111,7 +112,7 @@ function Dashboard() {
                       <p className="mb-0 h6 fw-light">Total Revenue</p>
                     </div>
                   </div>
-                </div>
+                </div> 
               </div>
 
               <div className="card mb-4">
@@ -143,7 +144,7 @@ function Dashboard() {
                         <th>Level</th>
                         <th>Status</th>
                         <th>Date Created</th>
-                        <th>Action</th>
+                        <th>Edit</th>
                         <th />
                       </tr>
                     </thead>
@@ -214,15 +215,18 @@ function Dashboard() {
         </p>
       </td>
       <td>
-        <button className="btn btn-primary btn-sm mt-3 me-1">
+      <Link
+          to={`/instructor/edit-course/${c.course_id}/`}
+          className="btn btn-primary btn-sm mt-3 me-1"
+        >
           <i className="fas fa-edit"></i>
-        </button>
-        <button className="btn btn-danger btn-sm mt-3 me-1">
+        </Link>
+         <button className="btn btn-danger btn-sm mt-3 me-1">
           <i className="fas fa-trash"></i>
         </button>
         <button className="btn btn-secondary btn-sm mt-3 me-1">
           <i className="fas fa-eye"></i>
-        </button>
+        </button> 
       </td>
     </tr>
   ))}

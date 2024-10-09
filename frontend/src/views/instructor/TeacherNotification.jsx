@@ -18,7 +18,7 @@ function TeacherNotification() {
 
   const fetchNoti = () => {
     useAxios()
-      .get(`teacher/noti-list/1/`)
+      .get(`teacher/noti-list/${UserData()?.user_id}/`)
       .then((res) => {
         setNoti(res.data);
         console.log(res.data);
@@ -38,7 +38,7 @@ function TeacherNotification() {
 
     useAxios()
       .patch(
-        `teacher/noti-detail/1/${notiId}`,
+        `teacher/noti-detail/${UserData()?.user_id}/${notiId}`,
         formdata
       )
       .then((res) => {

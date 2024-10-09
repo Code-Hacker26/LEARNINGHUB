@@ -7,7 +7,7 @@ function Header() {
 
     return (
         <div className="row align-items-center">
-            <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+            {/* <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <div className="card px-4 pt-2 pb-4 shadow-sm rounded-3">
                     <div className="d-flex align-items-end justify-content-between">
                         <div className="d-flex align-items-center">
@@ -26,7 +26,7 @@ function Header() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

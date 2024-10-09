@@ -175,10 +175,10 @@ function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td><p className='mt-3'>{moment(c.date).format("DDD MM, YYYY")}</p></td>
+                                                <td><p className='mt-3'>{moment(c.date).format("DD MM, YYYY")}</p></td>
                                                 <td><p className='mt-3'>{c.lectures?.length}</p></td>
                                                 <td><p className='mt-3'>{c.completed_lessons?.length}</p></td>
-                                                <td>
+                                                 <td>
                                                 {c.completed_lesson?.length < 1 && (
                                                     <Link
                                                     to={`/student/courses/${c.enrollment_id}/`}
@@ -198,7 +198,7 @@ function Dashboard() {
                                                 <i className="fas fa-arrow-right ms-2"></i>
                                               </Link>
                                                 )}
-                                                </td>
+                                                </td> 
                                             </tr>
                                         
                                             ))}
